@@ -36,3 +36,24 @@
     transform: rotate(360deg);
   }
 }
+
+.demo-logo-vertical {
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  white-space: nowrap;
+  line-height: 32px;
+  text-align: center;
+  color: aliceblue;
+  font-weight: 800;
+}
+
+.ant-layout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ant-badge {
+  margin-right: 20px;
+}
