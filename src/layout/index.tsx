@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import AppMenus, { menuList } from '../router/menu'
 import {
   DesktopOutlined,
   FileOutlined,
@@ -103,36 +104,7 @@ const MainLayout: React.FC = () => {
         <div className="demo-logo-vertical">
           {collapsed ? '英语' : '英语学习系统'}
         </div>
-        <Menu theme="dark" defaultSelectedKeys={[]} mode="inline">
-          <Menu.Item icon={<DesktopOutlined />} key="1">
-            <Link to="/menu1">菜单1</Link>
-          </Menu.Item>
-          <Menu.Item icon={<DesktopOutlined />} key="2">
-            <Link to="/menu2">菜单2</Link>
-          </Menu.Item>
-          <Menu.Item icon={<DesktopOutlined />} key="3">
-            <Link to="/menu3">菜单3</Link>
-          </Menu.Item>
-          <Menu.Item icon={<DesktopOutlined />} key="4">
-            <Link to="/menu4">菜单4</Link>
-          </Menu.Item>
-          <Menu.Item icon={<DesktopOutlined />} key="5">
-            <Link to="/menu5">菜单5</Link>
-          </Menu.Item>
-          <Menu.Item icon={<DesktopOutlined />} key="6">
-            <Link to="/menu6">菜单6</Link>
-          </Menu.Item>
-          <SubMenu icon={<TeamOutlined />} title="用户管理">
-            <Menu.Item key="7" icon={<UserOutlined />}>
-              <Link to="/user">用户列表</Link>
-            </Menu.Item>
-          </SubMenu>
-          <SubMenu icon={<PieChartOutlined />} title="角色管理">
-            <Menu.Item key="8" icon={<UserOutlined />}>
-              <Link to="/role">角色列表</Link>
-            </Menu.Item>
-          </SubMenu>
-        </Menu>
+        <AppMenus menuConfig={menuList} />
       </Sider>
       <Layout>
         <Header style={{ padding: 0, background: colorBgContainer }}>
