@@ -105,8 +105,10 @@ function genMenu(menuConfig: IMenuConfig[]) {
   })
 }
 
-function AppMenus(props: { menuConfig: IMenuConfig[] }) {
-  const handleSelect = () => {}
+function AppMenus(props: { menuConfig: IMenuConfig[]; onSelect: Function }) {
+  const handleSelect = (e: any) => {
+    props.onSelect(e)
+  }
   const [openKeys, setOpenKeys] = useState(['user'])
   const rootSubmenuKeys = ['user-manage', 'role-manage', 'menu3-manage']
 
