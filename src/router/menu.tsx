@@ -83,6 +83,10 @@ export interface IMenuConfig {
   children?: IMenuConfig[]
 }
 
+/**
+ * 生成菜单
+ * @param menuConfig 菜单配置
+ */
 function genMenu(menuConfig: IMenuConfig[]) {
   return menuConfig.map((menuItem) => {
     const itemIcon = menuItem?.icon
