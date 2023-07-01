@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react'
 import MainLayout from './layout'
 import './App.css'
+import './style/animate.css'
 import { ConfigProvider } from 'antd'
 import { HashRouter, useRoutes } from 'react-router-dom'
 import router from './router'

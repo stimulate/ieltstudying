@@ -57,3 +57,18 @@
 .ant-badge {
   margin-right: 20px;
 }
+
+.app-theme-light .ant-layout-sider {
+  color: rgba(0, 0, 0, 0.88);
+  background: #ffffff;
+}
+
+.app-theme-light .ant-layout-sider .demo-logo-vertical {
+  color: rgba(0, 0, 0, 0.88);
+  background: #ccc;
+}
+
+.app-theme-light .ant-layout-sider .ant-layout-sider-trigger {
+  color: rgba(0, 0, 0, 0.88);
+  background: #ccc;
+}

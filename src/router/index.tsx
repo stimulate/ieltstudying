@@ -57,6 +57,7 @@ const routeList: RouteObject[] = [
       { path: 'menu6', element: './menu/menu6.tsx' },
     ],
   },
+  { path: '*', element: './404/index.tsx' },
 ]
 /**
  *  扫描路由取得全部路由文件

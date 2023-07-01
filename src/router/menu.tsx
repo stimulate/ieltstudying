@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Menu } from 'antd'
 import SubMenu from 'antd/es/menu/SubMenu'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import type { MenuProps } from 'antd'
-
+import store from '../redux'
+import { AppStateType } from '../redux/state/appState'
 export const menuList: IMenuConfig[] = [
   {
     key: 'user-manage',
@@ -84,6 +85,37 @@ export interface IMenuConfig {
 }
 
 /**
+ * 获取树节点
+ */
+function getTreePathNodeByPath(tree: IMenuConfig[], path: string) {
+  if (!path) {
+    return []
+  }
+  let result: IMenuConfig[] = [] // 记录路径结果
+  let traverse = (
+    key: string,
+    pathNode: IMenuConfig[],
+    tree: IMenuConfig[]
+  ) => {
+    if (tree.length === 0) {
+      return
+    }
+    for (let item of tree) {
+      pathNode.push(item)
+      if (item.path === path) {
+        result = JSON.parse(JSON.stringify(pathNode))
+        return
+      }
+      const children = item?.children || []
+      traverse(key, pathNode, children) // 遍历
+      pathNode.pop() // 回溯
+    }
+  }
+  traverse(path, [], tree)
+  return result
+}
+
+/**
  * 生成菜单
  * @param menuConfig 菜单配置
  */
@@ -110,13 +142,54 @@ function genMenu(menuConfig: IMenuConfig[]) {
 }
 
 function AppMenus(props: { menuConfig: IMenuConfig[]; onSelect: Function }) {
+  const { pathname } = useLocation()
+  const [openKeys, setOpenKeys] = useState<string[]>([])
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([])
+  const [appStore, setAppStore] = useState<AppStateType>()
+
+  // 初始化时监听store状态,当store的状态更新时更新appStore的值
+  useEffect(() => {
+    const { app } = store.getState()
+    setAppStore(app)
+
+    let unsubscribe = store.subscribe(() => {
+      const { app } = store.getState()
+      setAppStore(app)
+    })
+    return () => {
+      unsubscribe()
+    }
+  }, [])
+
+  // 监听路由变化，动态计算openKeys、selectedKeys
+  useEffect(() => {
+    if (pathname && pathname !== '/') {
+      const menuItems = getTreePathNodeByPath(menuList, pathname)
+      if (menuItems?.length) {
+        const menuKeys = menuItems.map((x) => x.key)
+        setOpenKeys(menuKeys)
+        setSelectedKeys(menuKeys)
+        // 传递select事件，设置面包屑对应数据
+        props.onSelect({ key: menuKeys[menuKeys.length - 1] })
+      }
+    } else {
+      setOpenKeys([])
+      setSelectedKeys([])
+    }
+  }, [pathname])
+
+  // 处理菜单选择操作
   const handleSelect = (e: any) => {
     props.onSelect(e)
   }
-  const [openKeys, setOpenKeys] = useState(['user'])
-  const rootSubmenuKeys = ['user-manage', 'role-manage', 'menu3-manage']
 
+  // 处理菜单展开收起操作
   const onOpenChange: MenuProps['onOpenChange'] = (keys) => {
+    const rootSubmenuKeys = menuList.map((x) => {
+      if (x.children?.length) {
+        return x.key
+      }
+    })
     const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1)
     if (rootSubmenuKeys.indexOf(latestOpenKey!) === -1) {
       setOpenKeys(keys)
@@ -128,7 +201,8 @@ function AppMenus(props: { menuConfig: IMenuConfig[]; onSelect: Function }) {
   return (
     <Menu
       mode="inline"
-      theme="dark"
+      theme={appStore?.theme ?? 'dark'}
+      selectedKeys={selectedKeys}
       openKeys={openKeys}
       onOpenChange={onOpenChange}
       onSelect={handleSelect}>
