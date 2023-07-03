@@ -25,7 +25,7 @@ import {
 import { Outlet } from 'react-router-dom'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import SubMenu from 'antd/es/menu/SubMenu'
-import store from '../redux'
+import store from '../store'
 
 const { Header, Content, Footer, Sider } = Layout
 

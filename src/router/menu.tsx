@@ -3,8 +3,8 @@ import { Menu } from 'antd'
 import SubMenu from 'antd/es/menu/SubMenu'
 import { Link, useLocation } from 'react-router-dom'
 import type { MenuProps } from 'antd'
-import store from '../redux'
-import { AppStateType } from '../redux/state/appState'
+import store from '../store'
+import { AppStateType } from '../store/state/appState'
 export const menuList: IMenuConfig[] = [
   {
     key: 'user-manage',

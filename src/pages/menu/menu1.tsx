@@ -1,9 +1,9 @@
 import { Button, MenuTheme } from 'antd'
-import store from '../../redux'
-import reduxAction from '../../redux/action'
+import store from '../../store'
+import reduxAction from '../../store/action'
 import { useEffect, useState } from 'react'
-import { UserStateType } from '../../redux/state/userState'
-import { AppStateType } from '../../redux/state/appState'
+import { UserStateType } from '../../store/state/userState'
+import { AppStateType } from '../../store/state/appState'
 
 const Menu1 = function () {
   const [userStore, setUserStore] = useState<UserStateType>()
