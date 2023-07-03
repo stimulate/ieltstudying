@@ -1,45 +1,44 @@
-import { Button, MenuTheme } from 'antd'
-import store from '../../store'
+import { Button } from 'antd'
 import reduxAction from '../../store/action'
-import { useEffect, useState } from 'react'
 import { UserStateType } from '../../store/state/userState'
 import { AppStateType } from '../../store/state/appState'
+import { connect } from 'react-redux'
 
-const Menu1 = function () {
-  const [userStore, setUserStore] = useState<UserStateType>()
-  const [appStore, setAppStore] = useState<AppStateType>()
+type Menu1Props = {
+  app: AppStateType
+  user: UserStateType
+  changeStoreTheme: Function
+}
 
-  useEffect(() => {
-    const { user, app } = store.getState()
-    setUserStore(user)
-    setAppStore(app)
-
-    let unsubscribe = store.subscribe(() => {
-      const { app } = store.getState()
-      setAppStore(app)
-    })
-
-    return () => {
-      unsubscribe()
-    }
-  }, [])
-
+const Menu1 = function ({ app, user, changeStoreTheme }: Menu1Props) {
   const handleThemeChange = () => {
-    let newThemeName = appStore?.theme === 'dark' ? 'light' : 'dark'
-    // 执行redux的action函数，得到含有type类型的对象
-    let changeStoreThemeAction = reduxAction.changeStoreTheme(newThemeName)
-    // store.dispatch 触发状态变更
-    store.dispatch(changeStoreThemeAction)
+    let newThemeName = app.theme === 'dark' ? 'light' : 'dark'
+    changeStoreTheme(newThemeName)
   }
   return (
     <div>
       <h1>
-        当前登录用户是:{userStore?.name},年龄{userStore?.age}
+        当前登录用户是:{user?.name},年龄{user?.age}
       </h1>
       <Button onClick={handleThemeChange}>
-        修改主题为:{appStore?.theme === 'dark' ? '明亮主题' : '暗黑主题'}
+        修改主题为:{app?.theme === 'dark' ? '明亮主题' : '暗黑主题'}
       </Button>
     </div>
   )
 }
-export default Menu1
+
+// 把store中的state数据作为props绑定到Menu1组件上
+const mapStateToProps = (state: Object) => {
+  return state
+}
+
+// 把store中将action作为props绑定到Menu1组件上
+const mapDispatchToProps = (dispatch: Function) => {
+  return {
+    changeStoreTheme: (newThemeName: string) => {
+      dispatch(reduxAction.changeStoreTheme(newThemeName))
+    },
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Menu1)

@@ -3,8 +3,8 @@ import { Menu } from 'antd'
 import SubMenu from 'antd/es/menu/SubMenu'
 import { Link, useLocation } from 'react-router-dom'
 import type { MenuProps } from 'antd'
-import store from '../store'
 import { AppStateType } from '../store/state/appState'
+import { connect } from 'react-redux'
 export const menuList: IMenuConfig[] = [
   {
     key: 'user-manage',
@@ -141,25 +141,16 @@ function genMenu(menuConfig: IMenuConfig[]) {
   })
 }
 
-function AppMenus(props: { menuConfig: IMenuConfig[]; onSelect: Function }) {
+type AppMenusProps = {
+  app?: AppStateType
+  menuConfig: IMenuConfig[]
+  onSelect: Function
+}
+
+function AppMenus({ app, menuConfig, onSelect }: AppMenusProps) {
   const { pathname } = useLocation()
   const [openKeys, setOpenKeys] = useState<string[]>([])
   const [selectedKeys, setSelectedKeys] = useState<string[]>([])
-  const [appStore, setAppStore] = useState<AppStateType>()
-
-  // 初始化时监听store状态,当store的状态更新时更新appStore的值
-  useEffect(() => {
-    const { app } = store.getState()
-    setAppStore(app)
-
-    let unsubscribe = store.subscribe(() => {
-      const { app } = store.getState()
-      setAppStore(app)
-    })
-    return () => {
-      unsubscribe()
-    }
-  }, [])
 
   // 监听路由变化，动态计算openKeys、selectedKeys
   useEffect(() => {
@@ -170,18 +161,13 @@ function AppMenus(props: { menuConfig: IMenuConfig[]; onSelect: Function }) {
         setOpenKeys(menuKeys)
         setSelectedKeys(menuKeys)
         // 传递select事件，设置面包屑对应数据
-        props.onSelect({ key: menuKeys[menuKeys.length - 1] })
+        onSelect({ key: menuKeys[menuKeys.length - 1] })
       }
     } else {
       setOpenKeys([])
       setSelectedKeys([])
     }
   }, [pathname])
-
-  // 处理菜单选择操作
-  const handleSelect = (e: any) => {
-    props.onSelect(e)
-  }
 
   // 处理菜单展开收起操作
   const onOpenChange: MenuProps['onOpenChange'] = (keys) => {
@@ -198,17 +184,27 @@ function AppMenus(props: { menuConfig: IMenuConfig[]; onSelect: Function }) {
     }
   }
 
+  // 处理菜单选择操作
+  const handleSelect = (e: any) => {
+    onSelect(e)
+  }
+
   return (
     <Menu
       mode="inline"
-      theme={appStore?.theme ?? 'dark'}
+      theme={app?.theme ?? 'dark'}
       selectedKeys={selectedKeys}
       openKeys={openKeys}
       onOpenChange={onOpenChange}
       onSelect={handleSelect}>
-      {genMenu(props.menuConfig)}
+      {genMenu(menuConfig)}
     </Menu>
   )
 }
 
-export default AppMenus
+// 把store中的state数据作为props绑定到Menu1组件上
+const mapStateToProps = (state: Object) => {
+  return state
+}
+
+export default connect(mapStateToProps)(AppMenus)
