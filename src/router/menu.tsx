@@ -3,7 +3,8 @@ import { Menu } from 'antd'
 import SubMenu from 'antd/es/menu/SubMenu'
 import { Link, useLocation } from 'react-router-dom'
 import type { MenuProps } from 'antd'
-
+import { AppStateType } from '../store/state/appState'
+import store from '../store'
 export const menuList: IMenuConfig[] = [
   {
     key: 'user-manage',
@@ -141,6 +142,7 @@ function genMenu(menuConfig: IMenuConfig[]) {
 }
 
 function AppMenus(props: { menuConfig: IMenuConfig[]; onSelect: Function }) {
+  const [appStore, setAppStore] = useState<AppStateType>()
   const { pathname } = useLocation()
   let rootSubmenuKeys: string[] = []
   const [openKeys, setOpenKeys] = useState<string[]>([])
@@ -160,6 +162,20 @@ function AppMenus(props: { menuConfig: IMenuConfig[]; onSelect: Function }) {
     rootSubmenuKeys = menuList
       .filter((x) => x.children?.length)
       .map((x) => x.key)
+
+    const { app } = store.getState()
+    setAppStore(app)
+
+    // 监听redux状态值变化，监听到变化时，动态设置appStore的值
+    let unsubscribe = store.subscribe(() => {
+      const { app } = store.getState()
+      setAppStore(app)
+    })
+
+    // 组件卸载时取消监听
+    return () => {
+      unsubscribe()
+    }
   }, [])
 
   // 监听路由变化，动态计算openKeys、selectedKeys
@@ -197,7 +213,7 @@ function AppMenus(props: { menuConfig: IMenuConfig[]; onSelect: Function }) {
   return (
     <Menu
       mode="inline"
-      theme="dark"
+      theme={appStore?.theme}
       openKeys={openKeys}
       selectedKeys={selectedKeys}
       onOpenChange={onOpenChange}

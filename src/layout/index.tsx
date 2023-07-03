@@ -25,6 +25,7 @@ import {
 import { Outlet } from 'react-router-dom'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import SubMenu from 'antd/es/menu/SubMenu'
+import store from '../store'
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -105,12 +106,29 @@ const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false)
   const [user, setUser] = useState(UserList[0])
   const [color, setColor] = useState(ColorList[0])
-
   const [menuPathNameList, setMenuPathNameList] = useState<string[]>([])
+
+  const defaultAppTheme = 'app-theme-dark'
+  const [appTheme, setAppTheme] = useState<string>(defaultAppTheme)
 
   const {
     token: { colorBgContainer },
   } = theme.useToken()
+
+  useEffect(() => {
+    let unsubscribe = store.subscribe(() => {
+      const { app } = store.getState()
+      if (app.theme) {
+        setAppTheme(`app-theme-` + app.theme)
+      } else {
+        setAppTheme(defaultAppTheme)
+      }
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [])
 
   useEffect(() => {
     const aa = pathname
@@ -131,7 +149,7 @@ const MainLayout: React.FC = () => {
   }
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout className={appTheme} style={{ minHeight: '100vh' }}>
       <Sider
         collapsible
         collapsed={collapsed}
