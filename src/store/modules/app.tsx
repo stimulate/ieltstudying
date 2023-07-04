@@ -1,13 +1,21 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { MenuTheme } from 'antd/es/menu/MenuContext'
+
+export type AppStateType = {
+  title: string
+  theme: MenuTheme
+}
+
+const appState: AppStateType = {
+  title: '应用名称',
+  theme: 'dark',
+}
+
 const app = createSlice({
   // 命名空间，name值会作为action type的前缀
   name: 'app',
   // 初始化状态
-  initialState: {
-    title: '应用名称',
-    theme: 'dark',
-  },
+  initialState: appState,
   // 1.定义reducer更新状态函数  2.组件中dispatch使用的action函数
   reducers: {
     changeTitle: (state, action) => {

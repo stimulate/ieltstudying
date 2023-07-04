@@ -3,8 +3,9 @@ import { Menu } from 'antd'
 import SubMenu from 'antd/es/menu/SubMenu'
 import { Link, useLocation } from 'react-router-dom'
 import type { MenuProps } from 'antd'
-import { AppStateType } from '../store/state/appState'
-import { connect } from 'react-redux'
+import { AppStateType } from '../store/modules/app'
+import { useSelector } from 'react-redux'
+import { StoreStateType } from '../store'
 export const menuList: IMenuConfig[] = [
   {
     key: 'user-manage',
@@ -147,11 +148,11 @@ type AppMenusProps = {
   onSelect: Function
 }
 
-function AppMenus({ app, menuConfig, onSelect }: AppMenusProps) {
+function AppMenus({ menuConfig, onSelect }: AppMenusProps) {
   const { pathname } = useLocation()
   const [openKeys, setOpenKeys] = useState<string[]>([])
   const [selectedKeys, setSelectedKeys] = useState<string[]>([])
-
+  const { app } = useSelector((state: StoreStateType) => state)
   // 监听路由变化，动态计算openKeys、selectedKeys
   useEffect(() => {
     if (pathname && pathname !== '/') {
@@ -203,8 +204,9 @@ function AppMenus({ app, menuConfig, onSelect }: AppMenusProps) {
 }
 
 // 把store中的state数据作为props绑定到Menu1组件上
-const mapStateToProps = (state: Object) => {
-  return state
-}
+// const mapStateToProps = (state: Object) => {
+//   return state
+// }
 
-export default connect(mapStateToProps)(AppMenus)
+// export default connect(mapStateToProps)(AppMenus)
+export default AppMenus

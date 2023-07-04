@@ -1,11 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import AppMenus, { IMenuConfig, menuList } from '../router/menu'
 import {
-  DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TeamOutlined,
-  UserOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   DownOutlined,
@@ -14,7 +9,6 @@ import type { MenuProps } from 'antd'
 import {
   Breadcrumb,
   Layout,
-  Menu,
   theme,
   Button,
   Badge,
@@ -23,43 +17,44 @@ import {
   Space,
 } from 'antd'
 import { Outlet } from 'react-router-dom'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import SubMenu from 'antd/es/menu/SubMenu'
-import store from '../store'
+import { useNavigate } from 'react-router-dom'
+import { StoreStateType } from '../store'
+import { useSelector } from 'react-redux'
 
 const { Header, Content, Footer, Sider } = Layout
 
-type MenuItem = Required<MenuProps>['items'][number]
-type DropdownItem = Required<MenuProps>['items'][number]
+// type MenuItem = Required<MenuProps>['items'][number]
+// type DropdownItem = Required<MenuProps>['items'][number]
 
-function getItem(
-  label: React.ReactNode,
-  key: React.Key,
-  icon?: React.ReactNode,
-  children?: MenuItem[]
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  } as MenuItem
-}
+// function getItem(
+//   label: React.ReactNode,
+//   key: React.Key,
+//   icon?: React.ReactNode,
+//   children?: MenuItem[]
+// ): MenuItem {
+//   return {
+//     key,
+//     icon,
+//     children,
+//     label,
+//   } as MenuItem
+// }
 
-const items: MenuItem[] = [
-  getItem('Option 1', '1', <PieChartOutlined />),
-  getItem('Option 2', '2', <DesktopOutlined />),
-  getItem('User', 'sub1', <UserOutlined />, [
-    getItem('Tom', '3'),
-    getItem('Bill', '4'),
-    getItem('Alex', '5'),
-  ]),
-  getItem('Team', 'sub2', <TeamOutlined />, [
-    getItem('Team 1', '6'),
-    getItem('Team 2', '8'),
-  ]),
-  getItem('Files', '9', <FileOutlined />),
-]
+// const items: MenuItem[] = [
+//   getItem('Option 1', '1', <PieChartOutlined />),
+//   getItem('Option 2', '2', <DesktopOutlined />),
+//   getItem('User', 'sub1', <UserOutlined />, [
+//     getItem('Tom', '3'),
+//     getItem('Bill', '4'),
+//     getItem('Alex', '5'),
+//   ]),
+//   getItem('Team', 'sub2', <TeamOutlined />, [
+//     getItem('Team 1', '6'),
+//     getItem('Team 2', '8'),
+//   ]),
+//   getItem('Files', '9', <FileOutlined />),
+// ]
+
 const UserList = ['Lucy', 'Tom', 'Edward']
 const ColorList = ['#7265e6', '#ffbf00', '#00a2ae']
 const userDropdownItems: MenuProps['items'] = [
@@ -101,34 +96,16 @@ function getTreePathNodeByKey(tree: IMenuConfig[], key: string) {
 }
 
 const MainLayout: React.FC = () => {
-  const defaultAppTheme = 'app-theme-dark'
   const navigate = useNavigate()
-  const { pathname } = useLocation()
   const [collapsed, setCollapsed] = useState(false)
-  const [user, setUser] = useState(UserList[0])
-  const [color, setColor] = useState(ColorList[0])
-  const [appTheme, setAppTheme] = useState<string>(defaultAppTheme)
-
+  const [user] = useState(UserList[0])
+  const [color] = useState(ColorList[0])
+  const { app } = useSelector((state: StoreStateType) => state)
   const [menuPathNameList, setMenuPathNameList] = useState<string[]>([])
 
   const {
     token: { colorBgContainer },
   } = theme.useToken()
-
-  useEffect(() => {
-    let unsubscribe = store.subscribe(() => {
-      const { app } = store.getState()
-      if (app.theme) {
-        setAppTheme(`app-theme-` + app.theme)
-      } else {
-        setAppTheme(defaultAppTheme)
-      }
-    })
-
-    return () => {
-      unsubscribe()
-    }
-  }, [])
 
   const handleDropdownClick: MenuProps['onClick'] = (e) => {
     if (e.key === '2') {
@@ -145,7 +122,7 @@ const MainLayout: React.FC = () => {
   }
 
   return (
-    <Layout style={{ minHeight: '100vh' }} className={appTheme}>
+    <Layout style={{ minHeight: '100vh' }} className={`app-theme-${app.theme}`}>
       <Sider
         collapsible
         collapsed={collapsed}
@@ -185,7 +162,7 @@ const MainLayout: React.FC = () => {
         <Content style={{ margin: '0 16px' }}>
           <Breadcrumb style={{ margin: '16px 0' }}>
             {menuPathNameList.map((title) => (
-              <Breadcrumb.Item>{title}</Breadcrumb.Item>
+              <Breadcrumb.Item key={title}>{title}</Breadcrumb.Item>
             ))}
           </Breadcrumb>
           <div

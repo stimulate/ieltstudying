@@ -1,6 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
-import user from './modules/user'
-import app from './modules/app'
+import user, { UserStateType } from './modules/user'
+import app, { AppStateType } from './modules/app'
+
+export type StoreStateType = {
+  app: AppStateType
+  user: UserStateType
+}
 
 const store = configureStore({
   reducer: {

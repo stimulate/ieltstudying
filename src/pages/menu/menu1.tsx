@@ -1,20 +1,17 @@
 import { Button } from 'antd'
-import reduxAction from '../../store/action'
-import { UserStateType } from '../../store/state/userState'
-import { AppStateType } from '../../store/state/appState'
-import { connect } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { changeTheme } from '../../store/modules/app'
+import { StoreStateType } from '../../store'
 
-type Menu1Props = {
-  app: AppStateType
-  user: UserStateType
-  changeStoreTheme: Function
-}
+const Menu1 = function () {
+  const dispatch = useDispatch()
+  const { app, user } = useSelector((state: StoreStateType) => state)
 
-const Menu1 = function ({ app, user, changeStoreTheme }: Menu1Props) {
   const handleThemeChange = () => {
     let newThemeName = app.theme === 'dark' ? 'light' : 'dark'
-    changeStoreTheme(newThemeName)
+    dispatch(changeTheme(newThemeName))
   }
+
   return (
     <div>
       <h1>
@@ -27,18 +24,4 @@ const Menu1 = function ({ app, user, changeStoreTheme }: Menu1Props) {
   )
 }
 
-// 把store中的state数据作为props绑定到Menu1组件上
-const mapStateToProps = (state: Object) => {
-  return state
-}
-
-// 把store中将action作为props绑定到Menu1组件上
-const mapDispatchToProps = (dispatch: Function) => {
-  return {
-    changeStoreTheme: (newThemeName: string) => {
-      dispatch(reduxAction.changeStoreTheme(newThemeName))
-    },
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Menu1)
+export default Menu1
