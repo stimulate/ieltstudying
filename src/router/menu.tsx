@@ -4,8 +4,7 @@ import SubMenu from 'antd/es/menu/SubMenu'
 import { Link, useLocation } from 'react-router-dom'
 import type { MenuProps } from 'antd'
 import { AppStateType } from '../store/modules/app'
-import { useSelector } from 'react-redux'
-import { StoreStateType } from '../store'
+import { useAppSelector } from '../store/hooks'
 export const menuList: IMenuConfig[] = [
   {
     key: 'user-manage',
@@ -152,7 +151,8 @@ function AppMenus({ menuConfig, onSelect }: AppMenusProps) {
   const { pathname } = useLocation()
   const [openKeys, setOpenKeys] = useState<string[]>([])
   const [selectedKeys, setSelectedKeys] = useState<string[]>([])
-  const { app } = useSelector((state: StoreStateType) => state)
+  // const { app } = useSelector((state: StoreStateType) => state)
+  const app = useAppSelector((state) => state.app)
   // 监听路由变化，动态计算openKeys、selectedKeys
   useEffect(() => {
     if (pathname && pathname !== '/') {

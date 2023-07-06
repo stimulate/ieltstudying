@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { MenuTheme } from 'antd/es/menu/MenuContext'
 
 export type AppStateType = {
@@ -18,14 +18,15 @@ const app = createSlice({
   initialState: appState,
   // 1.定义reducer更新状态函数  2.组件中dispatch使用的action函数
   reducers: {
-    changeTitle: (state, action) => {
+    changeTitle: (state, action: PayloadAction<string>) => {
       state.title = action.payload
     },
-    changeTheme: (state, action) => {
+    changeTheme: (state, action: PayloadAction<string>) => {
       state.theme = action.payload as MenuTheme
     },
   },
 })
+
 // 导出action函数
 export const { changeTitle, changeTheme } = app.actions
 

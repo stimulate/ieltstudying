@@ -1,11 +1,10 @@
 import { Button } from 'antd'
-import { useDispatch, useSelector } from 'react-redux'
 import { changeTheme } from '../../store/modules/app'
-import { StoreStateType } from '../../store'
+import { useAppDispatch, useAppSelector } from '../../store/hooks'
 
 const Menu1 = function () {
-  const dispatch = useDispatch()
-  const { app, user } = useSelector((state: StoreStateType) => state)
+  const dispatch = useAppDispatch()
+  const { app, user } = useAppSelector((state) => state)
 
   const handleThemeChange = () => {
     let newThemeName = app.theme === 'dark' ? 'light' : 'dark'

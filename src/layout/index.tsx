@@ -18,8 +18,8 @@ import {
 } from 'antd'
 import { Outlet } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import { StoreStateType } from '../store'
-import { useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import { exit } from '../store/modules/user'
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -100,7 +100,10 @@ const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false)
   const [user] = useState(UserList[0])
   const [color] = useState(ColorList[0])
-  const { app } = useSelector((state: StoreStateType) => state)
+  const dispatch = useAppDispatch()
+  // const { app } = useSelector((state) => state)
+  const app = useAppSelector((state) => state.app)
+
   const [menuPathNameList, setMenuPathNameList] = useState<string[]>([])
 
   const {
@@ -109,6 +112,7 @@ const MainLayout: React.FC = () => {
 
   const handleDropdownClick: MenuProps['onClick'] = (e) => {
     if (e.key === '2') {
+      dispatch(exit('01'))
       navigate('/login')
     }
     if (e.key === '1') {
