@@ -9,6 +9,7 @@ import reduxAction from '../../store/action'
 import { AppStateType } from '../../store/state/appState'
 import { UserStateType } from '../../store/state/userState'
 import { Button } from 'antd'
+import { UserAction } from '../../store/action/userAction'
 
 const Menu1 = function () {
   const [appStore, setAppStore] = useState<AppStateType>()
@@ -36,9 +37,20 @@ const Menu1 = function () {
   const handleThemeChange = () => {
     let newThemeName = appStore?.theme === 'dark' ? 'light' : 'dark'
     // 执行redux的action函数，得到含有type类型的对象
-    let changeStoreThemeAction = reduxAction.changeStoreTheme(newThemeName)
+    let changeStoreThemeAction = reduxAction.changeStoreTheme('zgk')
     // store.dispatch 触发状态变更
     store.dispatch(changeStoreThemeAction)
+    const { app } = store.getState()
+
+    // const test=():UserAction=>{
+    //   return {
+    //     type:'',
+    //     payload:''
+    //   }
+    // }
+    // store.dispatch(test)
+    // store.dispatch({type:"ChangeTheme",payload:newThemeName})
+    console.log('appStore?.theme', app.theme)
   }
 
   return (

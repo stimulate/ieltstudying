@@ -26,6 +26,7 @@ import { Outlet } from 'react-router-dom'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import SubMenu from 'antd/es/menu/SubMenu'
 import store from '../store'
+import reduxAction from '../store/action'
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -136,6 +137,7 @@ const MainLayout: React.FC = () => {
 
   const handleDropdownClick: MenuProps['onClick'] = (e) => {
     if (e.key === '2') {
+      store.dispatch(reduxAction.exit('01'))
       navigate('/login')
     }
     if (e.key === '1') {
