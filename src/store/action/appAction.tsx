@@ -1,6 +1,6 @@
 export type AppAction = {
   type: string
-  payload: string
+  payload: any
 }
 
 function changeStoreTitle(title: string): AppAction {

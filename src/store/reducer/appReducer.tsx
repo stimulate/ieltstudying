@@ -12,7 +12,11 @@ const appReducer: Reducer<AppStateType, AppAction> = (
       return { ...state, title: action.payload }
     case 'ChangeTheme':
       console.log('appReducer--->app.theme:', action.payload)
-      return { ...state, theme: action.payload as MenuTheme }
+      debugger
+      return {
+        ...state,
+        theme: action.payload.payload as MenuTheme,
+      }
     default:
       return state
   }
