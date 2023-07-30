@@ -15,6 +15,12 @@ type AppMenusProps = {
 
 export const menuList: IMenuConfig[] = [
   {
+    key: 'home',
+    title: '首页',
+    path: '/',
+    icon: 'DesktopOutlined',
+  },
+  {
     key: 'user-manage',
     title: '用户管理',
     icon: 'TeamOutlined',
@@ -174,8 +180,8 @@ function AppMenus({ app, menuConfig, onSelect }: AppMenusProps) {
         onSelect({ key: menuKeys[menuKeys.length - 1] })
       }
     } else {
-      setOpenKeys([])
-      setSelectedKeys([])
+      setOpenKeys(['home'])
+      setSelectedKeys(['home'])
     }
   }, [pathname])
 
