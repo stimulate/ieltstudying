@@ -1,29 +1,21 @@
 import boto3
 
-# 配置 Cognito 用户池 ID
-USER_POOL_ID = "us-east-1_example"
+# 🎯 Cognito の設定（適宜変更してください）
+USER_POOL_ID = "us-east-1_xxxxxx"  # Cognito User Pool ID
+GROUP_NAME = "TestGroup"           # 追加するグループ名
+USERNAMES = ["user1", "user2", "user3", "user4", "user5"]  # ユーザーリスト
 
-# 创建 Cognito 客户端
+# 📌 Cognito クライアントを作成
 client = boto3.client("cognito-idp")
 
-# 要批量创建的用户列表
-users = [
-    {"username": "user1", "email": "user1@example.com"},
-    {"username": "user2", "email": "user2@example.com"},
-    {"username": "user3", "email": "user3@example.com"},
-]
-
-# 批量创建用户
-for user in users:
-    response = client.admin_create_user(
-        UserPoolId=USER_POOL_ID,
-        Username=user["username"],
-        UserAttributes=[
-            {"Name": "email", "Value": user["email"]},
-            {"Name": "email_verified", "Value": "true"}  # 直接标记邮箱为已验证
-        ],
-        TemporaryPassword="0000",  # 设置固定的临时密码
-        MessageAction="SUPPRESS"  # 禁止 Cognito 发送欢迎邮件
-    )
-
-    print(f"User {user['username']} created successfully!")
+# 🔄 ユーザーを一括でグループに追加
+for username in USERNAMES:
+    try:
+        client.admin_add_user_to_group(
+            UserPoolId=USER_POOL_ID,
+            Username=username,
+            GroupName=GROUP_NAME
+        )
+        print(f"✅ ユーザー {username} を {GROUP_NAME} に追加しました。")
+    except Exception as e:
+        print(f"❌ ユーザー {username} の追加に失敗しました: {str(e)}")
