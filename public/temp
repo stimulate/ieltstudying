@@ -1,0 +1,29 @@
+import boto3
+
+# 配置 Cognito 用户池 ID
+USER_POOL_ID = "us-east-1_example"
+
+# 创建 Cognito 客户端
+client = boto3.client("cognito-idp")
+
+# 要批量创建的用户列表
+users = [
+    {"username": "user1", "email": "user1@example.com"},
+    {"username": "user2", "email": "user2@example.com"},
+    {"username": "user3", "email": "user3@example.com"},
+]
+
+# 批量创建用户
+for user in users:
+    response = client.admin_create_user(
+        UserPoolId=USER_POOL_ID,
+        Username=user["username"],
+        UserAttributes=[
+            {"Name": "email", "Value": user["email"]},
+            {"Name": "email_verified", "Value": "true"}  # 直接标记邮箱为已验证
+        ],
+        TemporaryPassword="0000",  # 设置固定的临时密码
+        MessageAction="SUPPRESS"  # 禁止 Cognito 发送欢迎邮件
+    )
+
+    print(f"User {user['username']} created successfully!")
