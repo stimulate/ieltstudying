@@ -21,9 +21,13 @@
 
 - **セキュリティグループの最小化**  
   必要最小限のポートと IP 範囲のみ許可。
+  不要なポートの開放を避け、特にSSHやRDPなどの管理ポートは限定されたIPアドレスからのみアクセス可能にします。
 
 - **IAM の最小権限設定**  
   各ユーザーやサービスに必要最低限のポリシーだけを付与。
+- MFA（多要素認証）の有効化
+特にルートアカウントや重要なユーザーにはMFAを設定し、セキュリティを強化します。
+- 必要に応じて一時的な認証情報（STSなど）を利用します
 
 ---
 
@@ -106,3 +110,113 @@
 - [AWS Well-Architected Framework ホワイトペーパー（日本語）](https://docs.aws.amazon.com/ja_jp/wellarchitected/latest/framework/wellarchitected-framework.pdf)
 - [AWSコスト最適化ガイド](https://aws.amazon.com/jp/blogs/news/9ways-to-optimize-aws-cost/)
 - [AWS公式 Cost Optimization ホワイトペーパー](https://docs.aws.amazon.com/ja_jp/whitepapers/latest/how-aws-pricing-works/aws-cost-optimization.html)
+
+# AWS アーキテクチャ設計におけるベストプラクティス  
+（AWS Well-Architected Framework に基づく）
+
+AWS アーキテクチャを構築する際に、**AWS Well-Architected Framework の6つの柱**  
+（セキュリティ、信頼性、運用の優秀性、コスト最適化、パフォーマンス効率、持続可能性）を遵守することで、  
+安全性・信頼性・効率性・コスト面・運用面で優れたシステムを実現できます。  
+以下は、これらの柱に基づいた命名規則、セキュリティ監査、運用、コスト管理などのベストプラクティスです。  
+
+（[AWS 公式ドキュメント][1] 参照）
+
+---
+
+## 🧱 1. 命名規則（全ての柱に共通）
+
+- **命名規則の統一**  
+  一貫性のある命名形式を採用（例：`<プロジェクト名>-<環境>-<リソースタイプ>-<用途>`）  
+  例：`myapp-prod-ec2-web`。管理・可視化しやすくなります。
+
+- **タグ（Tags）の活用**  
+  リソースに以下のようなタグを付与：  
+  `Project: myapp`、`Environment: production`、`Owner: dev-team`  
+  → コスト配分、リソース整理、アクセス制御がしやすくなります。
+
+- **機密情報を含めない**  
+  パスワードやシークレットキーなどの機密情報は命名に含めないこと。
+
+---
+
+## 🔐 2. セキュリティの柱（Security）
+
+- **最小権限の原則**  
+  IAM ポリシーは「必要最小限」で構成。  
+  ロールベースアクセス制御（RBAC）推奨。
+
+- **多要素認証（MFA）の有効化**  
+  すべてのユーザーに MFA を必須化して、アカウントの安全性を向上。
+
+- **監査とモニタリングの実施**  
+  AWS CloudTrail, AWS Config を使って操作ログ・設定変更の追跡。
+
+- **データの暗号化**  
+  転送中・保存中ともに暗号化（例：S3 バケットに SSE-S3, SSE-KMS）。
+
+---
+
+## 🛠️ 3. 運用の優秀性の柱（Operational Excellence）
+
+- **自動化の推進**  
+  AWS Lambda, Systems Manager による定型運用の自動化。
+
+- **継続的改善の仕組み**  
+  定期レビューと改善を行い、運用効率と品質を向上。
+
+- **インシデント対応計画の整備**  
+  障害発生時の対応マニュアルを事前に整備＋定期演習。
+
+---
+
+## 💰 4. コスト最適化の柱（Cost Optimization）
+
+- **リソース利用の見える化**  
+  AWS Cost Explorer, Budgets でコストと利用状況をモニタリング。
+
+- **利用量に応じた選択**  
+  過剰なスペックや予約インスタンスの見直し。  
+  Spot インスタンス・Savings Plans の活用も有効。
+
+- **ストレージ最適化**  
+  S3 ライフサイクルルール設定で古いオブジェクトを Glacier へ移行または削除。
+
+---
+
+## ⚙️ 5. 信頼性の柱（Reliability）
+
+- **冗長構成の設計**  
+  複数の AZ にリソースを分散配置して、単一障害点を排除。  
+  （[信頼性柱の詳細][2]）
+
+- **フェイルオーバーと自動復旧**  
+  ELB や Auto Scaling を用いて、障害時に自動で復旧。
+
+- **バックアップとリカバリ戦略**  
+  データバックアップの自動化（例：AWS Backup）と復旧手順のテストを実施。
+
+---
+
+## ⚡ 6. パフォーマンス効率の柱（Performance Efficiency）
+
+- **最適なサービス選択**  
+  ワークロード特性に応じたインスタンスタイプ、ストレージ種別を選定。
+
+- **スケーラブル設計**  
+  Auto Scaling, ECS, Lambda 等でトラフィック変動に柔軟対応。
+
+- **メトリクス監視とチューニング**  
+  CloudWatch を使った CPU、メモリ、ディスク I/O の監視とアラート設定。
+
+---
+
+これらのベストプラクティスを取り入れることで、**安全・高可用・効率的・コスト最適な AWS アーキテクチャ**が構築可能になります。
+
+さらなる詳細は [AWS Well-Architected Framework ホワイトペーパー][3] をご参照ください。
+
+---
+
+[1]: https://docs.aws.amazon.com/zh_cn/wellarchitected/2022-03-31/framework/wellarchitected-framework-2022-03-31.pdf?utm_source=chatgpt.com "[PDF] AWS Well-Architected Framework - Amazon.com"  
+[2]: https://docs.aws.amazon.com/zh_cn/wellarchitected/latest/reliability-pillar/wellarchitected-reliability-pillar.pdf?utm_source=chatgpt.com "[PDF] 可靠性支柱 - AWS Well-Architected 框架"  
+[3]: https://docs.aws.amazon.com/zh_cn/wellarchitected/latest/framework/wellarchitected-framework.pdf?utm_source=chatgpt.com "[PDF] AWS Well-Architected 框架 - Amazon.com"
+
