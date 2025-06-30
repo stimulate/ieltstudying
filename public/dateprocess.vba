@@ -1,104 +1,92 @@
-Sub ProcessAttendanceData()
-    Dim ws As Worksheet
-    Dim lastRow As Long, i As Long, outputRow As Long
-    Dim dateStr As String, timeStr As String
-    Dim workDate As Date, dayOfWeek As String
-    Dim startTime As String, endTime As String
+function main(workbook: ExcelScript.Workbook) {
+    // 新しいワークシートを作成（出力用）
+    let newSheet = workbook.addWorksheet("考勤整理");
     
-    ' 新しいワークシートを作成（出力用）
-    Set ws = Worksheets.Add(After:=ActiveSheet)
-    ws.Name = "考勤整理"
+    // ヘッダーを設定
+    newSheet.getRange("A1:F1").setValues([["日付", "曜日", "作業開始時間", "作業終了時間", "作業", "稼働日フラグ"]]);
     
-    ' ヘッダーを設定
-    ws.Cells(1, 1).Value = "日付"
-    ws.Cells(1, 2).Value = "曜日"
-    ws.Cells(1, 3).Value = "作業開始時間"
-    ws.Cells(1, 4).Value = "作業終了時間"
-    ws.Cells(1, 5).Value = "作業"
-    ws.Cells(1, 6).Value = "稼働日フラグ"
+    // データを収集するオブジェクト
+    let attendanceData: { [key: string]: { date: string, dayOfWeek: string, startTime?: string, endTime?: string } } = {};
     
-    ' 出力行を初期化
-    outputRow = 2
-    
-    ' データ処理
-    For i = 1 To Worksheets.Count
-        If Worksheets(i).Name <> ws.Name Then ' 出力シートは除外
-            lastRow = Worksheets(i).Cells(Rows.Count, 1).End(xlUp).Row
+    // すべてのワークシートを処理
+    workbook.getWorksheets().forEach(sheet => {
+        if (sheet.getName() !== "考勤整理") {
+            let usedRange = sheet.getUsedRange();
+            if (!usedRange) return;
             
-            For j = 1 To lastRow
-                If InStr(Worksheets(i).Cells(j, 1).Value, "【勤怠管理】") > 0 Then
-                    ' 作業タイプを取得
-                    Dim workType As String
-                    workType = Worksheets(i).Cells(j, 1).Value
+            let values = usedRange.getValues() as string[][];
+            
+            let currentWorkType = "";
+            
+            for (let i = 0; i < values.length; i++) {
+                let cellValue = values[i][0];
+                
+                if (typeof cellValue === "string" && cellValue.includes("【勤怠管理】")) {
+                    currentWorkType = cellValue;
+                    continue;
+                }
+                
+                if (currentWorkType && typeof cellValue === "string" && cellValue.match(/\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}/)) {
+                    let [dateStr, timeStr] = cellValue.split(" ");
+                    let date = new Date(dateStr);
                     
-                    ' 時間データを処理
-                    k = j + 1
-                    Do While k <= lastRow And InStr(Worksheets(i).Cells(k, 1).Value, "【勤怠管理】") = 0
-                        ' 日付と時間を分割
-                        dateStr = Left(Worksheets(i).Cells(k, 1).Value, 10)
-                        timeStr = Mid(Worksheets(i).Cells(k, 1).Value, 12, 5)
-                        
-                        ' 日付に変換
-                        workDate = CDate(dateStr)
-                        
-                        ' 曜日を判定
-                        Select Case Weekday(workDate)
-                            Case vbSunday: dayOfWeek = "日"
-                            Case vbMonday: dayOfWeek = "月"
-                            Case vbTuesday: dayOfWeek = "火"
-                            Case vbWednesday: dayOfWeek = "水"
-                            Case vbThursday: dayOfWeek = "木"
-                            Case vbFriday: dayOfWeek = "金"
-                            Case vbSaturday: dayOfWeek = "土"
-                        End Select
-                        
-                        ' レコードを検索または追加
-                        Dim found As Boolean
-                        found = False
-                        For m = 2 To outputRow - 1
-                            If ws.Cells(m, 1).Value = dateStr Then
-                                If workType = "【勤怠管理】作業開始" Then
-                                    ws.Cells(m, 3).Value = timeStr
-                                ElseIf workType = "【勤怠管理】作業終了" Then
-                                    ws.Cells(m, 4).Value = timeStr
-                                End If
-                                found = True
-                                Exit For
-                            End If
-                        Next m
-                        
-                        If Not found Then
-                            ws.Cells(outputRow, 1).Value = dateStr
-                            ws.Cells(outputRow, 2).Value = dayOfWeek
-                            
-                            If workType = "【勤怠管理】作業開始" Then
-                                ws.Cells(outputRow, 3).Value = timeStr
-                            ElseIf workType = "【勤怠管理】作業終了" Then
-                                ws.Cells(outputRow, 4).Value = timeStr
-                            End If
-                            
-                            ws.Cells(outputRow, 5).Value = "作業"
-                            
-                            ' 稼働日かどうかを判定
-                            If dayOfWeek = "土" Or dayOfWeek = "日" Then
-                                ws.Cells(outputRow, 6).Value = ""
-                            Else
-                                ws.Cells(outputRow, 6).Value = 1
-                            End If
-                            
-                            outputRow = outputRow + 1
-                        End If
-                        
-                        k = k + 1
-                    Loop
-                    j = k - 1 ' 処理済みの行をスキップ
-                End If
-            Next j
-        End If
-    Next i
+                    if (isNaN(date.getTime())) continue;
+                    
+                    let dayOfWeek = getJapaneseDayOfWeek(date);
+                    
+                    if (!attendanceData[dateStr]) {
+                        attendanceData[dateStr] = {
+                            date: dateStr,
+                            dayOfWeek: dayOfWeek
+                        };
+                    }
+                    
+                    if (currentWorkType.includes("作業開始")) {
+                        attendanceData[dateStr].startTime = timeStr;
+                    } else if (currentWorkType.includes("作業終了")) {
+                        attendanceData[dateStr].endTime = timeStr;
+                    }
+                }
+            }
+        }
+    });
     
-    ' 列幅を自動調整
-    ws.Columns.AutoFit
+    // データをワークシートに書き込み
+    let outputData = Object.keys(attendanceData).map(dateStr => {
+        let record = attendanceData[dateStr];
+        let isWeekend = (record.dayOfWeek === "土" || record.dayOfWeek === "日");
+        
+        return [
+            record.date,
+            record.dayOfWeek,
+            record.startTime || "",
+            record.endTime || "",
+            "作業",
+            isWeekend ? "" : 1
+        ];
+    });
     
-    MsgBox "勤怠データの整理が完了しました！", vbInformation
-End Sub
+    if (outputData.length > 0) {
+        newSheet.getRange("A2:F" + (outputData.length + 1)).setValues(outputData);
+    }
+    
+    // 列幅を自動調整
+    newSheet.getUsedRange()?.getFormat().autofitColumns();
+    
+    console.log("勤怠データの整理が完了しました！");
+}
+
+// 曜日を日本語で取得するヘルパー関数
+function getJapaneseDayOfWeek(date: Date): string {
+    const day = date.getDay();
+    switch (day) {
+        case 0: return "日";
+        case 1: return "月";
+        case 2: return "火";
+        case 3: return "水";
+        case 4: return "木";
+        case 5: return "金";
+        case 6: return "土";
+        default: return "";
+    }
+}
