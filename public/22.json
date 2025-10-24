@@ -1,0 +1,16 @@
+{
+  "Name": "Custom Web Infra Manager",
+  "IsCustom": true,
+  "Description": "Manage staging App Service, Front Door, WAF policies, and DNS zones",
+  "Actions": [
+    "Microsoft.Web/sites/*",
+    "Microsoft.Cdn/profiles/*",
+    "Microsoft.Network/frontdoors/*",
+    "Microsoft.Network/frontdoors/webApplicationFirewallPolicies/*",
+    "Microsoft.Network/dnsZones/*"
+  ],
+  "NotActions": [],
+  "AssignableScopes": [
+    "/subscriptions/{your-subscription-id}"
+  ]
+}
