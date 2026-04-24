@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azure アクセスレビュー 自動化ソリューション</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azure-blue: #0078d4;
+    --azure-dark: #003f7f;
+    --azure-light: #deecf9;
+    --accent-teal: #00b4d8;
+    --accent-green: #107c10;
+    --accent-orange: #d83b01;
+    --accent-yellow: #ffaa44;
+    --gray-dark: #1b1b2f;
+    --gray-mid: #444;
+    --gray-light: #f5f8fc;
+    --white: #ffffff;
+    --border: #cce0f5;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: #f0f4fa;
+    color: var(--gray-dark);
+    line-height: 1.8;
+  }
+
+  /* ===== COVER ===== */
+  .cover {
+    background: linear-gradient(135deg, #003f7f 0%, #0078d4 55%, #00b4d8 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10S0 25.523 0 20s4.477-10 10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .cover-badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 3px;
+    padding: 6px 20px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+    backdrop-filter: blur(4px);
+  }
+  .cover-logo {
+    font-size: 56px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 4px 16px rgba(0,0,0,0.3));
+  }
+  .cover-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 16px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.25);
+  }
+  .cover-subtitle {
+    font-size: 16px;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 48px;
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .cover-meta-item {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 16px 28px;
+    color: #fff;
+    backdrop-filter: blur(8px);
+    min-width: 160px;
+  }
+  .cover-meta-label { font-size: 10px; letter-spacing: 2px; opacity: 0.7; text-transform: uppercase; margin-bottom: 4px; }
+  .cover-meta-value { font-size: 15px; font-weight: 700; }
+
+  /* ===== PAGE ===== */
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* ===== SECTION ===== */
+  .section {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 52px 56px;
+    margin: 24px 0;
+    box-shadow: 0 2px 24px rgba(0,120,212,0.06);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--azure-blue), var(--accent-teal));
+  }
+
+  .section-eyebrow {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--azure-blue);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--azure-dark);
+    margin-bottom: 8px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--azure-light);
+  }
+  .section-lead {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 32px;
+    font-weight: 300;
+    line-height: 2;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--azure-dark);
+    margin: 28px 0 12px;
+    padding-left: 12px;
+    border-left: 3px solid var(--azure-blue);
+  }
+
+  /* ===== PROBLEM / SOLUTION CARDS ===== */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+  .card {
+    border-radius: 14px;
+    padding: 24px 28px;
+  }
+  .card.problem {
+    background: #fff5f5;
+    border: 1px solid #ffc9c9;
+  }
+  .card.solution {
+    background: #f0fdf4;
+    border: 1px solid #b2f2bb;
+  }
+  .card-icon { font-size: 28px; margin-bottom: 10px; }
+  .card-title { font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .card.problem .card-title { color: #c0392b; }
+  .card.solution .card-title { color: #107c10; }
+  .card ul { padding-left: 18px; }
+  .card ul li { font-size: 13.5px; line-height: 2; color: #444; }
+
+  /* ===== BENEFIT GRID ===== */
+  .benefit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
+  .benefit-item {
+    background: var(--gray-light);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 20px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .benefit-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,120,212,0.1); }
+  .benefit-icon { font-size: 32px; margin-bottom: 10px; }
+  .benefit-label { font-size: 12px; font-weight: 700; color: var(--azure-dark); line-height: 1.5; }
+
+  /* ===== RULE TABLE ===== */
+  .rule-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+  .rule-table th {
+    background: var(--azure-dark);
+    color: #fff;
+    padding: 13px 18px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .rule-table th:first-child { border-radius: 8px 0 0 0; }
+  .rule-table th:last-child { border-radius: 0 8px 0 0; }
+  .rule-table td {
+    padding: 13px 18px;
+    border-bottom: 1px solid #eaf0f9;
+    vertical-align: top;
+    line-height: 1.8;
+  }
+  .rule-table tr:nth-child(even) td { background: #f7faff; }
+  .rule-table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+  .rule-table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .tag-blue { background: var(--azure-light); color: var(--azure-dark); }
+  .tag-green { background: #d4edda; color: #155724; }
+  .tag-orange { background: #ffe8d6; color: #bf360c; }
+  .tag-red { background: #fde2e2; color: #9b1c1c; }
+
+  /* ===== ESCALATION STEPS ===== */
+  .escalation {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 20px 0;
+    position: relative;
+  }
+  .esc-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    position: relative;
+    padding-bottom: 20px;
+  }
+  .esc-step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 44px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--azure-blue), var(--accent-teal));
+  }
+  .esc-num {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--azure-blue);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,120,212,0.3);
+  }
+  .esc-content { flex: 1; }
+  .esc-title { font-weight: 700; font-size: 14px; color: var(--azure-dark); margin-bottom: 4px; }
+  .esc-desc { font-size: 13px; color: #555; line-height: 1.8; }
+
+  /* ===== WORKFLOW SVG ===== */
+  .workflow-wrap {
+    width: 100%;
+    overflow-x: auto;
+    margin: 20px 0;
+    background: #f7faff;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border);
+  }
+
+  /* ===== TIMELINE ===== */
+  .timeline {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin: 24px 0;
+    position: relative;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 24px; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--azure-blue), var(--accent-teal));
+  }
+  .tl-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+  }
+  .tl-dot {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    z-index: 1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    margin-bottom: 12px;
+  }
+  .tl-dot.blue { background: var(--azure-blue); }
+  .tl-dot.teal { background: var(--accent-teal); }
+  .tl-dot.green { background: var(--accent-green); }
+  .tl-dot.orange { background: var(--accent-orange); }
+  .tl-day { font-size: 11px; font-weight: 700; color: var(--azure-dark); letter-spacing: 1px; margin-bottom: 4px; }
+  .tl-label { font-size: 12px; color: #555; line-height: 1.5; max-width: 100px; }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  @media print {
+    body { background: white; }
+    .cover { page-break-after: always; min-height: auto; padding: 80px 60px; }
+    .section { box-shadow: none; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== COVER ===== -->
+<div class="cover">
+  <div class="cover-badge">社外秘 ｜ 管理層向け資料</div>
+  <div class="cover-logo">🔐</div>
+  <h1 class="cover-title">Azure Access Review<br>自動化ソリューション</h1>
+  <p class="cover-subtitle">ユースケース・運用ルール・ワークフロー</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">実施サイクル</div>
+      <div class="cover-meta-value">毎月18日 実施</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">レビュー期間</div>
+      <div class="cover-meta-value">5日間</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">方式</div>
+      <div class="cover-meta-value">セルフレビュー</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">対象</div>
+      <div class="cover-meta-value">全社アカウント</div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- ===== SECTION 1: 背景と課題 ===== -->
+  <div class="section">
+    <div class="section-eyebrow">01 ｜ ユースケース</div>
+    <h2 class="section-title">背景・課題とソリューション概要</h2>
+    <p class="section-lead">
+      社内アカウントの棚卸し業務は、これまでExcelによる手動管理で実施されてきました。
+      この手法には多くの非効率・リスクが存在しており、Azure Access Review を活用した自動化への移行を提案します。
+    </p>
+
+    <div class="two-col">
+      <div class="card problem">
+        <div class="card-icon">⚠️</div>
+        <div class="card-title">現状の課題（Excel管理）</div>
+        <ul>
+          <li>手作業による入力ミス・漏れのリスク</li>
+          <li>担当者への個別連絡に多大な工数</li>
+          <li>棚卸し結果の証跡・ログ管理が困難</li>
+          <li>不要アカウントの放置によるセキュリティリスク</li>
+          <li>管理者への負担集中、スケーラビリティ不足</li>
+        </ul>
+      </div>
+      <div class="card solution">
+        <div class="card-icon">✅</div>
+        <div class="card-title">Azure Access Review による解決</div>
+        <ul>
+          <li>自動メール送信でセルフレビューを実現</li>
+          <li>Monitoring Log による自動証跡・バックアップ</li>
+          <li>未対応者への多段階エスカレーション自動化</li>
+          <li>不要アカウントの速やかな削除・登記</li>
+          <li>管理工数の大幅削減とガバナンス強化</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>主要ベネフィット</h3>
+    <div class="benefit-grid">
+      <div class="benefit-item">
+        <div class="benefit-icon">⏱️</div>
+        <div class="benefit-label">工数削減<br>棚卸し作業時間を<br>最大80%削減</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">🛡️</div>
+        <div class="benefit-label">セキュリティ強化<br>不要アカウントの<br>即時検出・削除</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">📋</div>
+        <div class="benefit-label">監査対応<br>ログ自動取得により<br>証跡を完全保全</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">📱</div>
+        <div class="benefit-label">多チャネル対応<br>メール・Teams・<br>電話で確認を徹底</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">🔄</div>
+        <div class="benefit-label">定期自動実施<br>毎月同一ルールで<br>一貫性を確保</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">📊</div>
+        <div class="benefit-label">可視化・レポート<br>アカウント状況を<br>リアルタイム把握</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2: 運用ルール ===== -->
+  <div class="section">
+    <div class="section-eyebrow">02 ｜ 運用ルール</div>
+    <h2 class="section-title">アクセスレビュー 運用ルール一覧</h2>
+    <p class="section-lead">
+      本ソリューションは以下のルールに基づき、毎月自動実行されます。各ルールは標準化・文書化されており、担当者が変わっても同一品質を維持します。
+    </p>
+
+    <table class="rule-table">
+      <thead>
+        <tr>
+          <th style="width:22%">ルール項目</th>
+          <th style="width:18%">設定値</th>
+          <th>詳細・備考</th>
+          <th style="width:15%">分類</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>実施日</strong></td>
+          <td>毎月 <strong>18日</strong></td>
+          <td>Azure Access Review にて毎月18日 0:00 JST に自動起動。レビュー期間は5日間。</td>
+          <td><span class="tag tag-blue">スケジュール</span></td>
+        </tr>
+        <tr>
+          <td><strong>レビュー方式</strong></td>
+          <td>セルフレビュー</td>
+          <td>対象アカウント所有者本人に確認メールを自動送信。本人がリンクをクリックし「継続使用」または「不要」を選択する。</td>
+          <td><span class="tag tag-blue">方式</span></td>
+        </tr>
+        <tr>
+          <td><strong>初回通知</strong></td>
+          <td>18日 自動送信</td>
+          <td>Azure から対象ユーザー全員へ確認メールを一斉送信。メール本文にはレビューリンクを記載。</td>
+          <td><span class="tag tag-green">通知</span></td>
+        </tr>
+        <tr>
+          <td><strong>自動リマインダー</strong></td>
+          <td>期間の半分経過時点（自動）</td>
+          <td>レビュー期間5日中、期限の半分（3日）を経過しても未回答の対象者に対し、Azure が自動的にリマインダーメールを送信。回答済みの対象者には送信されない。</td>
+          <td><span class="tag tag-blue">自動通知</span></td>
+        </tr>
+        <tr>
+          <td><strong>回答期限</strong></td>
+          <td>5日以内（23日まで）</td>
+          <td>初回送信から5日以内（23日末日）に回答がない場合、エスカレーションフローに移行。</td>
+          <td><span class="tag tag-orange">期限</span></td>
+        </tr>
+        <tr>
+          <td><strong>エスカレーション手段</strong></td>
+          <td>多チャネル対応</td>
+          <td>① Microsoft Teams メッセージ ② 再送メール ③ 社内電話 ④ 部門連絡窓口 — の順で手動確認を実施。</td>
+          <td><span class="tag tag-orange">エスカレーション</span></td>
+        </tr>
+        <tr>
+          <td><strong>Monitoring Log</strong></td>
+          <td>毎月自動取得</td>
+          <td>レビュー期間終了後、Azure Monitoring Log からアカウント状態（承認・未回答・拒否）を CSV/JSON でエクスポートし、セキュアストレージに保存。</td>
+          <td><span class="tag tag-blue">ログ管理</span></td>
+        </tr>
+        <tr>
+          <td><strong>アカウント削除</strong></td>
+          <td>即時削除 + 登記</td>
+          <td>「不要」と確認されたアカウントは速やかに削除し、削除記録（日付・申請者・承認者）を台帳に登録。</td>
+          <td><span class="tag tag-red">削除処理</span></td>
+        </tr>
+        <tr>
+          <td><strong>証跡保管期間</strong></td>
+          <td>最低 12ヶ月</td>
+          <td>監査・コンプライアンス対応のため、Monitoring Log および削除台帳は最低12ヶ月間保管する。</td>
+          <td><span class="tag tag-blue">コンプライアンス</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>未回答時のエスカレーションフロー</h3>
+    <div class="escalation">
+      <div class="esc-step">
+        <div class="esc-num">1</div>
+        <div class="esc-content">
+          <div class="esc-title">📧 初回メール通知（18日・自動）</div>
+          <div class="esc-desc">Azure Access Review がレビュー開始と同時に対象者全員へ確認メールを自動送信。5日以内の回答を依頼。</div>
+        </div>
+      </div>
+      <div class="esc-step">
+        <div class="esc-num" style="background:#7c3aed;">2</div>
+        <div class="esc-content">
+          <div class="esc-title">🔔 自動リマインダー送信（期間中間・自動）</div>
+          <div class="esc-desc">レビュー開始から期間の半分（3日）が経過した時点で、<strong>まだ未回答の対象者のみ</strong>に Azure が自動でリマインダーメールを送信。回答済み者へは送信されない。</div>
+        </div>
+      </div>
+      <div class="esc-step">
+        <div class="esc-num">3</div>
+        <div class="esc-content">
+          <div class="esc-title">💬 Microsoft Teams 通知（期限超過後・手動）</div>
+          <div class="esc-desc">5日を超えても未回答の場合、管理者が Microsoft Teams にてダイレクトメッセージで確認依頼を送付。</div>
+        </div>
+      </div>
+      <div class="esc-step">
+        <div class="esc-num">4</div>
+        <div class="esc-content">
+          <div class="esc-title">📨 メール再送（手動）</div>
+          <div class="esc-desc">Teams 通知後も未回答の場合、管理者より再度メールにて催促。リンクの再確認を依頼。</div>
+        </div>
+      </div>
+      <div class="esc-step">
+        <div class="esc-num">5</div>
+        <div class="esc-content">
+          <div class="esc-title">📞 社内電話（手動）</div>
+          <div class="esc-desc">メール・Teamsに反応がない場合、社内電話番号に直接連絡し、アカウント使用状況を口頭で確認。</div>
+        </div>
+      </div>
+      <div class="esc-step">
+        <div class="esc-num">6</div>
+        <div class="esc-content">
+          <div class="esc-title">🏢 部門連絡窓口（最終手段）</div>
+          <div class="esc-desc">個人への連絡が取れない場合、当該部門の担当窓口・上長に連絡し、アカウント使用状況を代理確認。確認内容を台帳へ記録。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3: WORKFLOW ===== -->
+  <div class="section">
+    <div class="section-eyebrow">03 ｜ ワークフロー</div>
+    <h2 class="section-title">月次アクセスレビュー ワークフロー図</h2>
+    <p class="section-lead">
+      以下のフロー図は、毎月18日から始まるレビューサイクル全体の流れを示しています。
+      自動フェーズ（水色）・条件付き自動リマインダー（紫色）・手動フェーズ（橙色）を明確に区別しています。
+    </p>
+
+    <h3>📅 実施タイムライン</h3>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot blue">🚀</div>
+        <div class="tl-day">Day 0（18日）</div>
+        <div class="tl-label">レビュー開始<br>自動メール送信</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot teal">📬</div>
+        <div class="tl-day">Day 1〜2</div>
+        <div class="tl-label">回答受付期間<br>ログ蓄積</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:#7c3aed;">🔔</div>
+        <div class="tl-day">Day 3（中間）</div>
+        <div class="tl-label">自動リマインダー<br>（未回答者のみ）</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot teal">⏳</div>
+        <div class="tl-day">Day 4〜5（23日）</div>
+        <div class="tl-label">残り回答期間<br>期限到来</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot orange">📞</div>
+        <div class="tl-day">Day 6〜</div>
+        <div class="tl-label">エスカレーション<br>多チャネル対応</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot green">✅</div>
+        <div class="tl-day">月末</div>
+        <div class="tl-label">ログ出力<br>削除・台帳登記</div>
+      </div>
+    </div>
+
+    <h3>📐 詳細フロー図</h3>
+    <div class="workflow-wrap">
+      <svg viewBox="0 0 860 1010" xmlns="http://www.w3.org/2000/svg" width="100%" style="min-width:600px;display:block;font-family:'Noto Sans JP',sans-serif;">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#0078d4"/>
+          </marker>
+          <marker id="arrow-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#d83b01"/>
+          </marker>
+          <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#107c10"/>
+          </marker>
+          <marker id="arrow-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/>
+          </marker>
+          <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+            <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0078d4" flood-opacity="0.12"/>
+          </filter>
+          <filter id="shadow-sm">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.08"/>
+          </filter>
+        </defs>
+
+        <!-- LEGEND -->
+        <rect x="580" y="16" width="260" height="136" rx="10" fill="#f7faff" stroke="#cce0f5" stroke-width="1.5"/>
+        <text x="596" y="38" font-size="11" font-weight="700" fill="#003f7f">凡例</text>
+        <rect x="596" y="48" width="18" height="12" rx="3" fill="#deecf9" stroke="#0078d4" stroke-width="1.5"/>
+        <text x="622" y="59" font-size="11" fill="#444">自動プロセス</text>
+        <rect x="596" y="70" width="18" height="12" rx="3" fill="#f3e8ff" stroke="#7c3aed" stroke-width="1.5"/>
+        <text x="622" y="81" font-size="11" fill="#444">自動リマインダー（条件付）</text>
+        <rect x="596" y="92" width="18" height="12" rx="3" fill="#fff3e0" stroke="#d83b01" stroke-width="1.5"/>
+        <text x="622" y="103" font-size="11" fill="#444">手動プロセス</text>
+        <rect x="596" y="114" width="18" height="12" rx="3" fill="#e8f5e9" stroke="#107c10" stroke-width="1.5"/>
+        <text x="622" y="125" font-size="11" fill="#444">完了アクション</text>
+        <ellipse cx="605" cy="140" rx="9" ry="7" fill="#fff" stroke="#0078d4" stroke-width="1.5"/>
+        <text x="622" y="144" font-size="11" fill="#444">判定ゲート</text>
+
+        <!-- START -->
+        <ellipse cx="430" cy="50" rx="90" ry="28" fill="#003f7f" filter="url(#shadow)"/>
+        <text x="430" y="45" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">毎月 18日 0:00 JST</text>
+        <text x="430" y="62" text-anchor="middle" font-size="11" fill="#cce0f5">レビュー自動起動</text>
+
+        <!-- Arrow 1 -->
+        <line x1="430" y1="78" x2="430" y2="108" stroke="#0078d4" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <!-- BOX 1: 自動メール送信 -->
+        <rect x="270" y="110" width="320" height="64" rx="12" fill="#deecf9" stroke="#0078d4" stroke-width="2" filter="url(#shadow-sm)"/>
+        <text x="310" y="133" font-size="13" font-weight="700" fill="#003f7f">📧  自動メール一斉送信</text>
+        <text x="310" y="152" font-size="11" fill="#555">全対象アカウント所有者へレビューリンクを送付</text>
+        <text x="570" y="137" font-size="10" fill="#0078d4" font-style="italic">自動</text>
+
+        <!-- Arrow 2 -->
+        <line x1="430" y1="174" x2="430" y2="210" stroke="#0078d4" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <!-- BOX 2: 回答期間 -->
+        <rect x="270" y="212" width="320" height="64" rx="12" fill="#deecf9" stroke="#0078d4" stroke-width="2" filter="url(#shadow-sm)"/>
+        <text x="310" y="236" font-size="13" font-weight="700" fill="#003f7f">🗓  回答受付（Day 1〜5）</text>
+        <text x="310" y="255" font-size="11" fill="#555">本人がリンクをクリックし「使用継続」/ 「不要」を選択</text>
+        <text x="570" y="240" font-size="10" fill="#0078d4" font-style="italic">自動</text>
+
+        <!-- Arrow to reminder -->
+        <line x1="430" y1="276" x2="430" y2="288" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrow-purple)"/>
+
+        <!-- BOX REMINDER: 自動リマインダー -->
+        <rect x="220" y="290" width="420" height="68" rx="12" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2" filter="url(#shadow-sm)"/>
+        <text x="262" y="314" font-size="13" font-weight="700" fill="#5b21b6">🔔  自動リマインダーメール送信（Day 3）</text>
+        <text x="262" y="333" font-size="11" fill="#555">期限の半分（3日）経過時点で未回答の対象者のみへ Azure が自動送信</text>
+        <text x="598" y="318" font-size="10" fill="#7c3aed" font-style="italic">自動（条件付）</text>
+        <!-- Day label bubble -->
+        <rect x="222" y="302" width="36" height="16" rx="8" fill="#7c3aed"/>
+        <text x="240" y="314" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Day3</text>
+
+        <!-- Arrow from reminder to DIAMOND1 -->
+        <line x1="430" y1="358" x2="430" y2="398" stroke="#0078d4" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <!-- DIAMOND 1: 5日以内に回答？ -->
+        <polygon points="430,400 560,448 430,496 300,448" fill="#fff" stroke="#0078d4" stroke-width="2.5" filter="url(#shadow-sm)"/>
+        <text x="430" y="442" text-anchor="middle" font-size="12" font-weight="700" fill="#003f7f">5日以内に</text>
+        <text x="430" y="458" text-anchor="middle" font-size="12" font-weight="700" fill="#003f7f">回答あり？</text>
+
+        <!-- YES branch (right) -->
+        <line x1="560" y1="448" x2="660" y2="448" stroke="#107c10" stroke-width="2" marker-end="url(#arrow-green)"/>
+        <text x="598" y="440" font-size="11" font-weight="700" fill="#107c10">YES</text>
+
+        <!-- DIAMOND 2: 使用継続？ (right side) -->
+        <polygon points="740,420 820,448 740,476 660,448" fill="#fff" stroke="#107c10" stroke-width="2" filter="url(#shadow-sm)"/>
+        <text x="740" y="443" text-anchor="middle" font-size="10" font-weight="700" fill="#107c10">使用</text>
+        <text x="740" y="457" text-anchor="middle" font-size="10" font-weight="700" fill="#107c10">継続?</text>
+
+        <!-- YES-YES: 継続 -->
+        <line x1="740" y1="476" x2="740" y2="520" stroke="#107c10" stroke-width="2" marker-end="url(#arrow-green)"/>
+        <text x="748" y="502" font-size="10" font-weight="700" fill="#107c10">YES</text>
+        <rect x="680" y="522" width="120" height="44" rx="10" fill="#e8f5e9" stroke="#107c10" stroke-width="1.5" filter="url(#shadow-sm)"/>
+        <text x="740" y="542" text-anchor="middle" font-size="11" font-weight="700" fill="#107c10">✅ 継続承認</text>
+        <text x="740" y="558" text-anchor="middle" font-size="10" fill="#555">ログに記録</text>
+
+        <!-- YES-NO: 不要 (routing around right) -->
+        <line x1="820" y1="448" x2="858" y2="448" stroke="#d83b01" stroke-width="2"/>
+        <line x1="858" y1="448" x2="858" y2="632" stroke="#d83b01" stroke-width="2"/>
+        <line x1="858" y1="632" x2="720" y2="632" stroke="#d83b01" stroke-width="2" marker-end="url(#arrow-red)"/>
+        <text x="836" y="440" font-size="10" font-weight="700" fill="#d83b01">NO</text>
+        <text x="862" y="545" font-size="10" font-weight="700" fill="#d83b01" transform="rotate(90,862,545)">不要</text>
+
+        <!-- NO branch (down) from DIAMOND1 -->
+        <line x1="430" y1="496" x2="430" y2="528" stroke="#d83b01" stroke-width="2" marker-end="url(#arrow-red)"/>
+        <text x="438" y="516" font-size="11" font-weight="700" fill="#d83b01">NO</text>
+
+        <!-- BOX 3: エスカレーション -->
+        <rect x="240" y="530" width="380" height="64" rx="12" fill="#fff3e0" stroke="#d83b01" stroke-width="2" filter="url(#shadow-sm)"/>
+        <text x="280" y="553" font-size="13" font-weight="700" fill="#d83b01">⚡  エスカレーション（手動）</text>
+        <text x="280" y="572" font-size="11" fill="#555">Teams / 再送メール / 社内電話 / 部門窓口</text>
+        <text x="590" y="557" font-size="10" fill="#d83b01" font-style="italic">手動</text>
+
+        <!-- Arrow: esc -> diamond 3 -->
+        <line x1="430" y1="594" x2="430" y2="627" stroke="#d83b01" stroke-width="2" marker-end="url(#arrow-red)"/>
+
+        <!-- DIAMOND 3: 確認できた？ -->
+        <polygon points="430,629 555,667 430,705 305,667" fill="#fff" stroke="#d83b01" stroke-width="2.5" filter="url(#shadow-sm)"/>
+        <text x="430" y="661" text-anchor="middle" font-size="12" font-weight="700" fill="#333">確認</text>
+        <text x="430" y="677" text-anchor="middle" font-size="12" font-weight="700" fill="#333">できた？</text>
+
+        <!-- DIAMOND 4: 継続 or 不要 - YES right -->
+        <line x1="555" y1="667" x2="630" y2="667" stroke="#0078d4" stroke-width="2" marker-end="url(#arrow)"/>
+        <text x="574" y="659" font-size="11" font-weight="700" fill="#107c10">YES</text>
+
+        <!-- DIAMOND 4 -->
+        <polygon points="710,640 790,667 710,694 630,667" fill="#fff" stroke="#0078d4" stroke-width="2" filter="url(#shadow-sm)"/>
+        <text x="710" y="662" text-anchor="middle" font-size="10" font-weight="700" fill="#003f7f">使用</text>
+        <text x="710" y="676" text-anchor="middle" font-size="10" font-weight="700" fill="#003f7f">継続?</text>
+
+        <!-- 継続確認 -->
+        <line x1="710" y1="694" x2="710" y2="732" stroke="#107c10" stroke-width="2" marker-end="url(#arrow-green)"/>
+        <text x="718" y="717" font-size="10" font-weight="700" fill="#107c10">YES</text>
+        <rect x="650" y="734" width="120" height="44" rx="10" fill="#e8f5e9" stroke="#107c10" stroke-width="1.5" filter="url(#shadow-sm)"/>
+        <text x="710" y="753" text-anchor="middle" font-size="11" font-weight="700" fill="#107c10">✅ 継続確認</text>
+        <text x="710" y="769" text-anchor="middle" font-size="10" fill="#555">手動ログ記録</text>
+
+        <!-- DIAMOND 4 NO: 不要 routing right -->
+        <line x1="790" y1="667" x2="828" y2="667" stroke="#d83b01" stroke-width="2"/>
+        <line x1="828" y1="667" x2="828" y2="842" stroke="#d83b01" stroke-width="2"/>
+        <line x1="828" y1="842" x2="620" y2="842" stroke="#d83b01" stroke-width="2" marker-end="url(#arrow-red)"/>
+        <text x="808" y="659" font-size="10" font-weight="700" fill="#d83b01">NO</text>
+
+        <!-- DIAMOND 3 NO (down) -->
+        <line x1="430" y1="705" x2="430" y2="735" stroke="#d83b01" stroke-width="2" marker-end="url(#arrow-red)"/>
+        <text x="438" y="724" font-size="11" font-weight="700" fill="#d83b01">NO</text>
+
+        <!-- BOX: 引き続き調査 -->
+        <rect x="270" y="737" width="320" height="54" rx="12" fill="#fff3e0" stroke="#d83b01" stroke-width="2" filter="url(#shadow-sm)"/>
+        <text x="310" y="760" font-size="13" font-weight="700" fill="#d83b01">🔍  引き続き調査・部門長確認</text>
+        <text x="310" y="778" font-size="11" fill="#555">最終的にアカウント要否を部門長が判断</text>
+
+        <!-- Arrow: -> delete box -->
+        <line x1="430" y1="791" x2="430" y2="820" stroke="#d83b01" stroke-width="2" marker-end="url(#arrow-red)"/>
+
+        <!-- BOX: アカウント削除 -->
+        <rect x="490" y="822" width="320" height="58" rx="12" fill="#fde2e2" stroke="#c0392b" stroke-width="2" filter="url(#shadow-sm)"/>
+        <text x="530" y="846" font-size="13" font-weight="700" fill="#c0392b">🗑️  アカウント削除 + 台帳登記</text>
+        <text x="530" y="864" font-size="11" fill="#555">削除日・申請者・承認者を台帳に記録</text>
+        <line x1="430" y1="822" x2="490" y2="851" stroke="#d83b01" stroke-width="2"/>
+
+        <!-- ===== FINAL: Monitoring Log Box ===== -->
+        <rect x="160" y="912" width="540" height="60" rx="14" fill="#e8f5e9" stroke="#107c10" stroke-width="2.5" filter="url(#shadow)"/>
+        <text x="430" y="936" text-anchor="middle" font-size="14" font-weight="700" fill="#107c10">📊  Monitoring Log エクスポート &amp; 保管</text>
+        <text x="430" y="956" text-anchor="middle" font-size="12" fill="#555">全アカウント状態（承認・削除・未回答）を CSV/JSON でバックアップ保存</text>
+
+        <!-- Dashed arrows to LOG box -->
+        <line x1="740" y1="566" x2="740" y2="900" stroke="#107c10" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="740" y1="900" x2="700" y2="912" stroke="#107c10" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+        <line x1="650" y1="778" x2="600" y2="912" stroke="#107c10" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-green)"/>
+        <line x1="650" y1="851" x2="400" y2="912" stroke="#d83b01" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-red)"/>
+        <line x1="430" y1="791" x2="300" y2="912" stroke="#d83b01" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-red)"/>
+      </svg>
+    </div>
+
+    <h3>📝 フロー補足説明</h3>
+    <table class="rule-table">
+      <thead>
+        <tr>
+          <th>フェーズ</th>
+          <th>担当</th>
+          <th>実施内容</th>
+          <th>出力</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-blue">自動</span> レビュー開始</td>
+          <td>Azure システム</td>
+          <td>毎月18日に Access Review ジョブを起動、メールを全対象者へ送信</td>
+          <td>送信ログ</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-blue">自動</span> 回答受付</td>
+          <td>対象者本人</td>
+          <td>リンクより「使用継続」または「不要」を選択。5日間受付。</td>
+          <td>回答データ</td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:#ede9fe;color:#5b21b6;">自動（条件付）</span> リマインダー</td>
+          <td>Azure システム</td>
+          <td>Day 3 経過時点で未回答の対象者のみへ自動でリマインダーメールを送信。回答済み者はスキップ。</td>
+          <td>送信ログ</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-orange">手動</span> エスカレーション</td>
+          <td>管理者・IT担当</td>
+          <td>5日超過後、Teams → 再送メール → 電話 → 部門窓口の順で対応</td>
+          <td>確認記録</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-red">手動</span> 削除・登記</td>
+          <td>管理者</td>
+          <td>不要確認されたアカウントを即時削除し、台帳に登録</td>
+          <td>削除台帳</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-green">自動</span> ログ保管</td>
+          <td>Azure システム</td>
+          <td>Monitoring Log より全アカウント状態をエクスポートし、セキュアストレージへ保存</td>
+          <td>CSV / JSON ファイル</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== SECTION 4: まとめ ===== -->
+  <div class="section">
+    <div class="section-eyebrow">04 ｜ まとめ</div>
+    <h2 class="section-title">期待効果と推奨事項</h2>
+    <p class="section-lead">
+      本ソリューションの導入により、セキュリティ・コンプライアンス・運用効率の三軸で大幅な改善が見込まれます。
+      経営層としての承認・推進のご支援をお願いいたします。
+    </p>
+    <div class="benefit-grid">
+      <div class="benefit-item">
+        <div class="benefit-icon">💰</div>
+        <div class="benefit-label">コスト削減<br>手動棚卸し工数・<br>エラー対応コスト削減</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">🔒</div>
+        <div class="benefit-label">リスク低減<br>不要アカウントによる<br>不正アクセス防止</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">📑</div>
+        <div class="benefit-label">監査対応<br>完全な証跡で<br>コンプライアンス確保</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">⚙️</div>
+        <div class="benefit-label">標準化<br>属人化排除・<br>一貫したプロセス</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">📈</div>
+        <div class="benefit-label">スケーラビリティ<br>組織拡大に対応<br>自動で拡張</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">🤝</div>
+        <div class="benefit-label">ガバナンス強化<br>責任の明確化と<br>透明性の確保</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  社外秘 ｜ このドキュメントは管理層向けに作成されたものです ｜ Azure Access Review 自動化プロジェクト
+</div>
+
+</body>
+</html>
