@@ -1,16 +1,38 @@
-{
-  "Name": "Custom Web Infra Manager",
-  "IsCustom": true,
-  "Description": "Manage staging App Service, Front Door, WAF policies, and DNS zones",
-  "Actions": [
-    "Microsoft.Web/sites/*",
-    "Microsoft.Cdn/profiles/*",
-    "Microsoft.Network/frontdoors/*",
-    "Microsoft.Network/frontdoors/webApplicationFirewallPolicies/*",
-    "Microsoft.Network/dnsZones/*"
-  ],
-  "NotActions": [],
-  "AssignableScopes": [
-    "/subscriptions/{your-subscription-id}"
-  ]
-}
+$folder = "C:\ProgramData\CompanyScreensaver"
+
+New-Item -Path $folder -ItemType Directory -Force
+
+Copy-Item "$PSScriptRoot\image1.jpg" "$folder\image1.jpg" -Force
+Copy-Item "$PSScriptRoot\image2.jpg" "$folder\image2.jpg" -Force
+
+New-Item `
+-Path "HKLM:\SOFTWARE\CompanyScreensaver" `
+-Force
+
+Set-ItemProperty `
+-Path "HKLM:\SOFTWARE\CompanyScreensaver" `
+-Name "Installed" `
+-Value "1"
+
+Write-Output "Images deployed successfully."
+
+$folder = "C:\ProgramData\CompanyScreensaver"
+
+Set-ItemProperty `
+-Path "HKCU:\Control Panel\Desktop" `
+-Name "ScreenSaveActive" `
+-Value "1"
+
+Set-ItemProperty `
+-Path "HKCU:\Control Panel\Desktop" `
+-Name "SCRNSAVE.EXE" `
+-Value "C:\Windows\System32\PhotoScreensaver.scr"
+
+New-Item `
+-Path "HKCU:\Software\Microsoft\Windows Photo Viewer\Slideshow\Screensaver" `
+-Force
+
+Set-ItemProperty `
+-Path "HKCU:\Software\Microsoft\Windows Photo Viewer\Slideshow\Screensaver" `
+-Name "ImagesRootPath" `
+-Value $folder
