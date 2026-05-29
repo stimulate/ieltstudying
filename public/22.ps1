@@ -1,21 +1,35 @@
+
 $ErrorActionPreference = "Stop"
 
 $folder = "C:\ProgramData\CompanyScreensaver"
 
 # Create folder
-New-Item -Path $folder -ItemType Directory -Force
+New-Item -Path $folder -ItemType Directory -Force | Out-Null
 
-# Get script location
-$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+Write-Output "PSScriptRoot = $PSScriptRoot"
+
+# Show package contents
+Get-ChildItem $PSScriptRoot
+
+# Verify files exist
+if (-not (Test-Path "$PSScriptRoot\image1.jpg")) {
+    Write-Error "image1.jpg not found."
+    exit 1
+}
+
+if (-not (Test-Path "$PSScriptRoot\image2.jpg")) {
+    Write-Error "image2.jpg not found."
+    exit 1
+}
 
 # Copy images
-Copy-Item "$ScriptDir\image1.jpg" "$folder\image1.jpg" -Force
-Copy-Item "$ScriptDir\image2.jpg" "$folder\image2.jpg" -Force
+Copy-Item "$PSScriptRoot\image1.jpg" "$folder\image1.jpg" -Force
+Copy-Item "$PSScriptRoot\image2.jpg" "$folder\image2.jpg" -Force
 
 # Registry
 New-Item `
     -Path "HKLM:\SOFTWARE\CompanyScreensaver" `
-    -Force
+    -Force | Out-Null
 
 Set-ItemProperty `
     -Path "HKLM:\SOFTWARE\CompanyScreensaver" `
@@ -23,7 +37,10 @@ Set-ItemProperty `
     -Value "1"
 
 Write-Output "Images deployed successfully."
+
 exit 0
+
+
 
 
 $ErrorActionPreference = "Stop"
