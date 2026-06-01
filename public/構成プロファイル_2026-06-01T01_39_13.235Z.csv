@@ -1,0 +1,21 @@
+﻿ポリシー名,プラットフォーム,ポリシーの種類,最終変更,スコープ タグ
+ScreensaverConfig,Windows 10 以降,設定カタログ,2026-05-28T15:24:23.4413545Z,Default
+ActiveXDisable,Windows 10 以降,設定カタログ,2026-05-28T14:49:16.6424151Z,Default
+OfficeUpdateConfig,Windows 10 以降,設定カタログ,2026-05-26T05:21:05.9281808Z,Default
+wbcertctrl,Windows 10 以降,設定カタログ,2026-05-26T04:02:17.2004559Z,Default
+AutoShareWksdisable,Windows 10 以降,設定カタログ,2026-05-26T03:59:03.2807102Z,Default
+wsus,Windows 10 以降,設定カタログ,2026-05-25T05:37:40.8920669Z,Default
+IEConfigCompatibilityViewIntranet,Windows 10 以降,設定カタログ,2026-05-22T09:33:01.4387973Z,Default
+IEConfig,Windows 10 以降,設定カタログ,2026-05-22T09:04:52.4933592Z,Default
+Permission for forensic usb,Windows 10 以降,設定カタログ,2026-05-22T08:46:19.2192727Z,Default
+EdgeIEMode,Windows 10 以降,設定カタログ,2026-05-22T08:17:36.6669322Z,Default
+PowershellLogging,Windows 10 以降,設定カタログ,2026-05-21T15:35:41.056988Z,Default
+OutlookSettings,Windows 10 以降,設定カタログ,2026-05-21T15:16:18.4562663Z,Default
+OfficeAppAutoSave,Windows 10 以降,設定カタログ,2026-05-21T15:02:08.921336Z,Default
+EdgePopupEnable,Windows 10 以降,設定カタログ,2026-05-21T14:52:15.2012216Z,Default
+DefenderOff,Windows 10 以降,設定カタログ,2026-05-21T14:44:08.5529985Z,Default
+BitlockerSetting,Windows 10 以降,設定カタログ,2026-05-21T14:36:12.9236211Z,Default
+RDPdisable,Windows 10 以降,設定カタログ,2026-05-21T14:32:18.3764121Z,Default
+winstartmsg,Windows 10 以降,設定カタログ,2026-05-21T03:01:41.526872Z,Default
+Disable RemovableDisk,Windows 10 以降,設定カタログ,2026-05-21T01:31:59.3996534Z,Default
+EdgeBlockExternalExtensions,Windows 10 以降,設定カタログ,2026-05-21T01:30:35.4132427Z,Default
