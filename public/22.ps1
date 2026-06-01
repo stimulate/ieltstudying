@@ -1,3 +1,4 @@
+Get-ItemProperty "HKCU:\Software\Microsoft\Windows Photo Viewer\Slideshow\Screensaver" | Format-List *
 
 $ErrorActionPreference = "Stop"
 
