@@ -117,3 +117,36 @@ Set-ItemProperty `
 
 Write-Output "Screensaver deployed successfully."
 exit 0
+
+$ErrorActionPreference = "Stop"
+$folder = "C:\ProgramData\CompanyScreensaver"
+
+# Remove scr file
+if (Test-Path "$folder\myscr.scr") {
+    Remove-Item "$folder\myscr.scr" -Force
+    Write-Output "myscr.scr removed."
+} else {
+    Write-Output "myscr.scr not found, skipping."
+}
+
+# Remove folder if empty
+if (Test-Path $folder) {
+    $remaining = Get-ChildItem $folder
+    if ($remaining.Count -eq 0) {
+        Remove-Item $folder -Force
+        Write-Output "Folder removed."
+    } else {
+        Write-Output "Folder not empty, skipping folder removal."
+    }
+}
+
+# Remove registry key
+if (Test-Path "HKLM:\SOFTWARE\CompanyScreensaver") {
+    Remove-Item "HKLM:\SOFTWARE\CompanyScreensaver" -Recurse -Force
+    Write-Output "Registry key removed."
+} else {
+    Write-Output "Registry key not found, skipping."
+}
+
+Write-Output "Uninstall completed."
+exit 0
