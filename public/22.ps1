@@ -86,3 +86,34 @@ rundll32.exe user32.dll, UpdatePerUserSystemParameters
 Write-Output "Photo screensaver configured successfully."
 
 exit 0
+
+$ErrorActionPreference = "Stop"
+$folder = "C:\ProgramData\CompanyScreensaver"
+
+# Create folder
+New-Item -Path $folder -ItemType Directory -Force | Out-Null
+Write-Output "PSScriptRoot = $PSScriptRoot"
+
+# Show package contents
+Get-ChildItem $PSScriptRoot
+
+# Verify file exists
+if (-not (Test-Path "$PSScriptRoot\myscr.scr")) {
+    Write-Error "myscr.scr not found."
+    exit 1
+}
+
+# Copy scr file
+Copy-Item "$PSScriptRoot\myscr.scr" "$folder\myscr.scr" -Force
+
+# Registry
+New-Item `
+    -Path "HKLM:\SOFTWARE\CompanyScreensaver" `
+    -Force | Out-Null
+Set-ItemProperty `
+    -Path "HKLM:\SOFTWARE\CompanyScreensaver" `
+    -Name "Installed" `
+    -Value "1"
+
+Write-Output "Screensaver deployed successfully."
+exit 0
