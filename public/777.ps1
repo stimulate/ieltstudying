@@ -37,3 +37,4 @@ $bytes = (Get-ItemProperty "HKCU:\Software\Microsoft\Windows Photo Viewer\Slides
 
 $item = Get-Item "HKCU:\Software\Microsoft\Windows Photo Viewer\Slideshow\Screensaver"
 $item.GetValueKind("EncryptedPIDL")
+[System.IO.File]::WriteAllText("C:\temp\pidl.txt", $value)
