@@ -31,3 +31,7 @@ $acl.SetAccessRule($adminRule)
 $acl.SetAccessRule($systemRule)
 $acl.SetAccessRule($usersRule)
 Set-Acl -Path $folder -AclObject $acl
+
+
+$bytes = (Get-ItemProperty "HKCU:\Software\Microsoft\Windows Photo Viewer\Slideshow\Screensaver" -Name EncryptedPIDL).EncryptedPIDL
+$bytes -join ','
