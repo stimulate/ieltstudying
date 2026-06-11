@@ -52,3 +52,11 @@ $value = (Get-ItemProperty "HKCU:\Software\Microsoft\Windows Photo Viewer\Slides
 # 看前100个字符的原始内容（用十六进制查看）
 $bytes = [System.Text.Encoding]::Unicode.GetBytes($value)
 $bytes[0..100] | ForEach-Object { "{0:X2}" -f $_ }
+
+$value = (Get-ItemProperty "HKCU:\Software\Microsoft\Windows Photo Viewer\Slideshow\Screensaver" -Name EncryptedPIDL).EncryptedPIDL
+
+"长度: $($value.Length)"
+"类型: $($value.GetType().FullName)"
+"前50字符: $($value.Substring(0, [Math]::Min(50,$value.Length)))"
+"是否含有逗号: $($value.Contains(','))"
+"是否含有空格: $($value.Contains(' '))"
