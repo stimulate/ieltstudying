@@ -38,3 +38,17 @@ $bytes = (Get-ItemProperty "HKCU:\Software\Microsoft\Windows Photo Viewer\Slides
 $item = Get-Item "HKCU:\Software\Microsoft\Windows Photo Viewer\Slideshow\Screensaver"
 $item.GetValueKind("EncryptedPIDL")
 [System.IO.File]::WriteAllText("C:\temp\pidl.txt", $value)
+
+$value = (Get-ItemProperty "HKCU:\Software\Microsoft\Windows Photo Viewer\Slideshow\Screensaver" -Name EncryptedPIDL).EncryptedPIDL
+
+# 把每个字符的 ASCII 码打印出来看看是什么
+$value.ToCharArray() | ForEach-Object { [int]$_ } | Select-Object -First 50
+
+# 检查是否有 NUL
+$value.Contains([char]0)
+
+$value = (Get-ItemProperty "HKCU:\Software\Microsoft\Windows Photo Viewer\Slideshow\Screensaver" -Name EncryptedPIDL).EncryptedPIDL
+
+# 看前100个字符的原始内容（用十六进制查看）
+$bytes = [System.Text.Encoding]::Unicode.GetBytes($value)
+$bytes[0..100] | ForEach-Object { "{0:X2}" -f $_ }
