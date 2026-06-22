@@ -78,3 +78,9 @@ try {
     Write-Log "=== FATAL ERROR: $_ ==="
     exit 1
 }
+
+$folderPath = "Shared Documents/02. 运用"
+
+Invoke-RestMethod `
+    -Uri "https://graph.microsoft.com/v1.0/sites/$siteId/drive/root:/$folderPath" `
+    -Headers $headers | Select-Object id, name, webUrl
