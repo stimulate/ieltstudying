@@ -1,0 +1,53 @@
+Step 2 — 除外アカウントを設定（任意）
+nightlogoff.ps1 と logincheck.ps1 の両方にある以下の箇所を編集します。夜間でも使用を許可する IT 管理者アカウントがあれば追加してください。
+powershell$PERMANENT_EXEMPTIONS = @(
+    "Administrator",
+    "it-admin"      # ← 必要に応じて追加
+)
+両ファイルで同じリストにすること（片方だけ変えると挙動が食い違います）。
+Step 3 — パッケージをビルド
+管理者 PowerShell で実行します。
+powershell.\Build-IntunePackage.ps1
+output\install.intunewin が生成され、Intune に貼り付ける設定値が画面に表示されます。
+Step 4 — Intune Admin Center で Win32 App を登録
+https://intune.microsoft.com にアクセスし、アプリ → Windows → 追加 → Windows アプリ (Win32) で install.intunewin をアップロードします。
+各設定値は Build-IntunePackage.ps1 の出力をそのまま使います。重要な点のみ補足します。
+項目値補足インストールの動作システムユーザーを選ぶと権限不足でタスク登録が失敗します検出規則・ファイル名version.txtC:\ProgramData\NightLockLite\version.txt の内容が 1.0.0 なら「インストール済み」と判定されます割り当て種別必須「使用可能」にすると社員が自分でアンインストールできてしまいます
+Step 5 — 動作確認
+Intune が対象 PC に配信（通常 8 時間以内）した後、PC 上で確認します。
+powershell# タスクが 3 本登録されているか確認
+Get-ScheduledTask -TaskName "NightLockLite-*" | Select-Object TaskName, State
+
+# 期待される出力:
+# NightLockLite-LogoffAt2200    Ready
+# NightLockLite-IntervalCheck   Ready
+# NightLockLite-OnLogon         Ready
+テストは nightlogoff.ps1 の $RESTRICT_START を現在時刻に書き換えて手動実行するのが一番手早いです。
+powershell# テスト機で直接実行（SYSTEM 権限が必要）
+& "C:\ProgramData\NightLockLite\scripts\nightlogoff.ps1"
+
+# ログ確認
+Get-Content "C:\ProgramData\NightLockLite\logs\nightlogoff-$(Get-Date -Format 'yyyyMM').log" -Tail 20
+
+各スクリプトの役割と連携
+22:00 になる
+  └─ NightLockLite-LogoffAt2200 が起動
+       └─ nightlogoff.ps1 → ログイン中の全員をチェック → 除外以外をログオフ
+
+22:00〜05:00 の間、10 分毎
+  └─ NightLockLite-IntervalCheck が起動
+       └─ nightlogoff.ps1 → 同上（22:00 以降にログインした人を補足）
+
+ユーザーがログオンした瞬間
+  └─ NightLockLite-OnLogon が起動
+       └─ logincheck.ps1 → 制限時間帯なら 5 秒後に即ログオフ
+                          （10 分インターバルの空白を埋める）
+PC が 22:00 に電源 OFF だった場合は StartWhenAvailable 設定により、次回起動後にタスクが補完実行されます。
+
+緊急停止（メンテナンスモード）
+問題発生時は対象 PC 上で以下のファイルを作成するだけで全スクリプトが停止します。Intune の操作は不要です。
+powershell# 停止
+New-Item "C:\ProgramData\NightLockLite\MAINTENANCE_MODE" -ItemType File -Force
+
+# 再開
+Remove-Item "C:\ProgramData\NightLockLite\MAINTENANCE_MODE" -Force
