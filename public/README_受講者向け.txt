@@ -27,3 +27,15 @@ SQL Training Lab 操作方法
 注意：
 ZIPファイル内から直接起動せず、
 必ず「すべて展開」してから実行してください。
+
+certutil -f -encode "%DATABASE%" "%TEMPBASE64%" >nul 2>&1
+
+Windows標準のcertutilコマンドを使用し、ACCDBファイルをBase64形式のテキストデータへ変換しています。
+
+attrib +h "%WORKDIR%" >nul 2>&1
+attrib +h "%TARGET%" >nul 2>&1
+
+エクスプローラー上で通常表示されにくいように、フォルダーとデータベースへ隠し属性を設定しています。
+
+これはセキュリティ保護や暗号化ではありません。
+隠しファイルを表示する設定にすれば確認できます。
