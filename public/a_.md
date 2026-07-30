@@ -17,34 +17,30 @@
 
 https://int.agt.millea.jp/tokiomarine-nichido/dfw/SETCK2/redirect.html?Alias=SP*2Fweb*2Fuj_startFromTNetGet.html*3FcalculationType*3D01*26item*3D02*26pol_Num*3D1CHAVGK3vZhYPPCeej*252FMxg*253D*253D*26pol_classification_no*3D*26gamen_seigyo_modern*3D1&Session=U2FsdGVkX18yhfR6JsugmbzDI4yRpPqUFVSLAcFqARI5Ic5LTKLaboOh5mAIb3E*2FSjhaHujGYCKvtYn*2BVguMDUTvel59RFMydTXA7LDhnNCJ7Yn*2BglK6Km0M9GpD1384CL&TS=U2FsdGVkX1*2Bw*2FKdAX6YgCh*2BrigjtUYG4*2BgjHRwXYOluQ*3D&WN=_blank&WA=width*3D1014*2Cheight*3D705*2Ctop*3D0*2Cleft*3D0*2Ctoolbar*3Dno*2Cmenubar*3Dno*2Cstatus*3Dno*2Clocation*3Dno*2Cscrollbars*3Dyes*2Cresizable*3Dyes
 
-PowerShellを管理者として実行し、以下のコードを入力して実行してください。
-Get-WinEvent -FilterHashtable @{
-    LogName      = 'System'
-    ProviderName = 'Schannel'
-    StartTime    = (Get-Date).AddMinutes(-10)
-} |
-Select-Object TimeCreated, Id, LevelDisplayName, Message |
-Format-List
+Windows標準のnetsh traceを取得いただけますと、元のTLS／クライアント証明書認証を変更せずに比較できます。
 
-可以在邮件中追加下面这段“证书确认手顺”。我把整封邮件也一起整理好了：
+管理者権限でPowerShellまたはコマンドプロンプトを起動し、以下を実行してください。
 
----
+保存先フォルダーの作成
+    mkdir C:\Temp\IETrace
 
-北さんから送付いただいたイベントビューアーのログを確認したところ、主に以下の2件の証明書関連エラーが記録されていました。
+Entra ID参加端末では、以下を実行します。
 
-証明書チェーンを、信頼されたルート証明機関まで構築できませんでした。
-証明書チェーンは処理されましたが、信頼プロバイダーが信頼していないルート証明書で終了しました。
+    netsh trace start scenario=InternetClient capture=yes report=yes persistent=no overwrite=yes maxSize=512 traceFile="C:\Temp\IETrace\entra-fail.etl"
 
-このため、今回のWebページのリンク遷移エラーは、証明書認証が正常に完了していないことに関連している可能性があります。
+その後、以下の操作を行ってください。
 
-ただし、確認できたログが今回のWebアクセスによって発生したものかどうかは、現時点では完全には特定できていません。
+対象サイトのリンクをクリックする
+証明書を選択する
+画面が閉じるまで待つ
+さらに20～30秒程度待つ
+以下のコマンドでトレースを停止する
+    netsh trace stop
 
-北さんには、既存のイベントログを一度クリアしたうえで、再度リンクをクリックして事象を再現し、新しいエラーログが記録されるか確認いただくようメールで依頼しています。
+正常にアクセスできるAD参加端末でも同様に取得する場合は、以下のファイル名で開始してください。
 
-現時点では、まだ北さんからの回答を受領していません。回答および再取得したログを確認後、改めてご報告いたします。
+    netsh trace start scenario=InternetClient capture=yes report=yes persistent=no overwrite=yes maxSize=512 traceFile="C:\Temp\IETrace\ad-success.etl"
 
-よろしくお願いいたします。
+正常に画面が表示された後、同様に以下を実行してください。
 
-なお、証明書名が同じであっても、Thumbprintや有効期限が異なる場合は別の証明書となるため、証明書名だけではなく、Thumbprintもあわせてご確認ください。
-
-お手数をおかけしますが、よろしくお願いいたします。
+    netsh trace stop
