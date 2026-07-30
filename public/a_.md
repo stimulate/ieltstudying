@@ -50,3 +50,11 @@ Entra ID参加端末では、以下を実行します。
 echo WScript.Echo("CSCRIPT_OK") > "%TEMP%\sqltraining_test.js"
 cscript.exe //nologo "%TEMP%\sqltraining_test.js"
 del "%TEMP%\sqltraining_test.js"
+
+
+把两份 ETL 分别转换为文本：
+
+netsh trace convert input="C:\Temp\IETrace\entra-fail.etl" output="C:\Temp\IETrace\entra-fail.txt" dump=TXT report=yes overwrite=yes
+netsh trace convert input="C:\Temp\IETrace\ad-success.etl" output="C:\Temp\IETrace\ad-success.txt" dump=TXT report=yes overwrite=yes
+
+netsh trace convert 支持将 ETL 转换为 TXT、CSV、XML 或 EVTX，也可以同时生成 HTML 报告。
