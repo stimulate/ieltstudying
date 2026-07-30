@@ -41,6 +41,7 @@ Entra ID参加端末では、以下を実行します。
 
     netsh trace start scenario=InternetClient capture=yes report=yes persistent=no overwrite=yes maxSize=512 traceFile="C:\Temp\IETrace\ad-success.etl"
 
+{"pattern":"https://int.agt.millea.jp","filter":{}}
 正常に画面が表示された後、同様に以下を実行してください。
 
     netsh trace stop
