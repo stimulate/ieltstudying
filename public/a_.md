@@ -45,3 +45,8 @@ Entra ID参加端末では、以下を実行します。
 正常に画面が表示された後、同様に以下を実行してください。
 
     netsh trace stop
+
+
+echo WScript.Echo("CSCRIPT_OK") > "%TEMP%\sqltraining_test.js"
+cscript.exe //nologo "%TEMP%\sqltraining_test.js"
+del "%TEMP%\sqltraining_test.js"
