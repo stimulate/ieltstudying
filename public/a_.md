@@ -58,3 +58,24 @@ netsh trace convert input="C:\Temp\IETrace\entra-fail.etl" output="C:\Temp\IETra
 netsh trace convert input="C:\Temp\IETrace\ad-success.etl" output="C:\Temp\IETrace\ad-success.txt" dump=TXT report=yes overwrite=yes
 
 netsh trace convert 支持将 ETL 转换为 TXT、CSV、XML 或 EVTX，也可以同时生成 HTML 报告。
+
+お疲れ様です。
+
+旧端末でMicrosoft Authenticatorを利用できる場合は、以下の手順で新端末への登録をお願いいたします。
+
+新端末に「Microsoft Authenticator」アプリをインストールします。
+PCのブラウザから、以下のページへアクセスします。
+https://mysignins.microsoft.com/security-info
+会社アカウントでサインインし、旧端末のMicrosoft Authenticatorで認証します。
+「サインイン方法の追加」をクリックし、「Microsoft Authenticator」を選択します。
+新端末でMicrosoft Authenticatorを開き、以下を選択します。
+「＋」→「職場または学校アカウント」→「QRコードをスキャン」
+PC画面に表示されたQRコードを新端末で読み取り、画面の案内に従って登録を完了します。
+新端末で認証通知を受信し、正常に承認できることを確認します。
+新端末での認証確認後、同じ「セキュリティ情報」画面から旧端末のMicrosoft Authenticatorを削除します。
+
+新端末での認証確認が完了するまでは、旧端末の登録を削除しないようお願いいたします。
+
+操作中にエラーが発生した場合は、表示されたエラーメッセージのスクリーンショットをお送りください。
+
+よろしくお願いいたします。
