@@ -159,13 +159,10 @@ Intune の Configuration Policy の Assignment について、
 
 Microsoft 公式ドキュメントにも、User Group と Device Group の使い分けについて記載されています。
 
-■ Microsoft Learn
-「Microsoft Intune でのデバイス プロファイルの割り当て」
-https://learn.microsoft.com/ja-jp/intune/device-configuration/assign-device-profile
-
-特に、上記ページの
-「ユーザー グループとデバイス グループ」
-の項目をご参照ください。
-
-以上、よろしくお願いいたします。
+Outlook上でファイルをアイコンとして表内に挿入する方法
+クラシック版Outlookでメール形式を「リッチテキスト」に設定し、表の対象セルにカーソルを置いた状態で、
+［挿入］→［オブジェクト］→［ファイルから作成］→［アイコンで表示］
+を選択すると、ファイルをアイコンとして表内に挿入できます。
+OneDriveの共有リンクを表内に貼り付ける方法
+ファイルをOneDriveのフォルダに保存し、対象ファイルの ［共有］→［リンクをコピー］ を選択して、そのURLをメール本文の表内に貼り付ける方法です。
 
