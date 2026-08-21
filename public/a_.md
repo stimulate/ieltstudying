@@ -120,7 +120,7 @@ AWS Certificate Manager（ACM）
 
 現時点では、Platform Scriptの実行タイミングや端末側の状態などにより、設定が正常に反映されなかった可能性があると考えておりますが、他の要因の可能性もあるため、引き続き確認を行っています。
 
-IntuneのPowerShell Platform Scriptは、一度「成功」と判定されると、スクリプトまたはポリシーに変更がない限り、基本的には再実行されません。
+IntuneのPowerShell Platform Scriptは、一度「成功」と判定されると、スクリプトまたはポリシーに変更がない限り、基本的には再実行されません。なお、実行結果が「失敗」と判定された場合は、その後3回のIntune Management Extensionのチェックイン時に再試行されます。
 
 Microsoft公式ドキュメント：
 https://learn.microsoft.com/ja-jp/intune/device-management/tools/run-powershell-scripts-windows
