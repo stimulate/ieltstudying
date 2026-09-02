@@ -131,4 +131,10 @@ https://learn.microsoft.com/ja-jp/intune/device-management/tools/run-powershell-
 
 お手数をおかけしますが、よろしくお願いいたします。
 
+お疲れ様です。
+本日午後から、既存のAWS Organization配下にアカウントを作成し、必要なユーザー／権限設定、Budgetアラート、S3バケット等の初期設定を進めようと思っていますが、問題ないでしょうか。
+
+あわせて、今回の構築はTerraformで実施する想定でしょうか。それとも、まずはコンソールから手動で作成する形でしょうか。
+方針をご確認いただけますと助かります。
+
 
