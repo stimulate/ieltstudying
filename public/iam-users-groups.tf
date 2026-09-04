@@ -86,6 +86,30 @@ resource "aws_iam_group_policy_attachment" "administrator_access" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
+
+###############################################################################
+# Self-service password change
+#
+# Allows IAM users to change their own AWS Management Console password.
+# Attached to every non-administrator group so users keep this ability
+# regardless of whether they are BillViewer, Developer, or InfraEngineer.
+###############################################################################
+
+resource "aws_iam_group_policy_attachment" "bill_viewer_change_password" {
+  group      = aws_iam_group.bill_viewer.name
+  policy_arn = "arn:aws:iam::aws:policy/IAMUserChangePassword"
+}
+
+resource "aws_iam_group_policy_attachment" "developer_change_password" {
+  group      = aws_iam_group.developer.name
+  policy_arn = "arn:aws:iam::aws:policy/IAMUserChangePassword"
+}
+
+resource "aws_iam_group_policy_attachment" "infra_engineer_change_password" {
+  group      = aws_iam_group.infra_engineer.name
+  policy_arn = "arn:aws:iam::aws:policy/IAMUserChangePassword"
+}
+
 data "aws_iam_policy_document" "developer_access" {
   statement {
     sid    = "AmplifyDeveloperOperations"
