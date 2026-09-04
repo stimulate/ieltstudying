@@ -137,4 +137,8 @@ https://learn.microsoft.com/ja-jp/intune/device-management/tools/run-powershell-
 あわせて、今回の構築はTerraformで実施する想定でしょうか。それとも、まずはコンソールから手動で作成する形でしょうか。
 方針をご確認いただけますと助かります。
 
+昨日は、Route 53のHosted Zoneの作成、S3バケットの作成、Budgetのアラート設定を行いました。
+あわせて、Terraformの設定確認と修正も進めました。
+
+本日は、残っているAWSリソースの構築と動作確認を進め、プロジェクト全体を一通り構築完了させる予定です。
 
