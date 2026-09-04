@@ -42,3 +42,18 @@ resource "aws_acm_certificate_validation" "cloudfront" {
     aws_route53_record.acm_validation.fqdn
   ]
 }
+
+bill_viewer_users = [
+  "tanaka",
+]
+
+developer_users = [
+  "sato",
+  "yamada",
+]
+
+infra_engineer_users = [
+  "suzuki",
+]
+
+terraform_state_bucket_name = "你现在实际的tfstate-bucket名字"
