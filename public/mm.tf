@@ -1,36 +1,44 @@
-provider "aws" {
-  profile = "eol-dev"
-  region  = "ap-northeast-1"
+resource "aws_acm_certificate" "cloudfront" {
+  provider = aws.us_east_1
 
-  default_tags {
-    tags = {
-      Project     = "eol"
-      Environment = "dev"
-      ManagedBy   = "Terraform"
-    }
+  domain_name       = var.dev_domain_name
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = {
+    Name = "eol-dev-cloudfront-cert"
   }
 }
 
-provider "aws" {
-  alias   = "us_east_1"
-  profile = "eol-dev"
-  region  = "us-east-1"
 
-  default_tags {
-    tags = {
-      Project     = "eol"
-      Environment = "dev"
-      ManagedBy   = "Terraform"
-    }
-  }
+locals {
+  acm_validation_option = one(
+    aws_acm_certificate.cloudfront.domain_validation_options
+  )
 }
 
-data "aws_caller_identity" "current" {}
 
-dev_domain_name = "你的DEV域名"
+resource "aws_route53_record" "acm_validation" {
+  zone_id = aws_route53_zone.dev.zone_id
 
-budget_email       = "你的通知邮箱"
-monthly_budget_usd = 100
+  name    = local.acm_validation_option.resource_record_name
+  type    = local.acm_validation_option.resource_record_type
+  records = [local.acm_validation_option.resource_record_value]
 
-repository_url = "你的GitHub仓库URL"
-amplify_branch = "develop"
+  ttl             = 60
+  allow_overwrite = true
+}
+
+
+resource "aws_acm_certificate_validation" "cloudfront" {
+  provider = aws.us_east_1
+
+  certificate_arn = aws_acm_certificate.cloudfront.arn
+
+  validation_record_fqdns = [
+    aws_route53_record.acm_validation.fqdn
+  ]
+}
