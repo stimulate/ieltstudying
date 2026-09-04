@@ -142,20 +142,42 @@ https://learn.microsoft.com/ja-jp/intune/device-management/tools/run-powershell-
 
 本日は、残っているAWSリソースの構築と動作確認を進め、プロジェクト全体を一通り構築完了させる予定です。
 
-お疲れ様です。
+| 区分                | 構築・設定内容                                     | Reviewポイント                                       |
+| ----------------- | ------------------------------------------- | ------------------------------------------------ |
+| AWS Account       | `eol-dev` アカウント作成                           | Organization配下、対象OU/アカウント情報                      |
+| AWS Access        | `OrganizationAccountAccessRole` を利用した管理アクセス | 管理アカウントからAssumeRole可能か                           |
+| AWS CLI           | `eol-dev` Profile設定                         | 対象Account ID、Regionが正しいか                         |
+| Terraform         | Terraform DEV環境の基本構成                        | Provider / Backend / State管理                     |
+| Terraform Backend | Terraform State保存用S3 Bucket                 | Versioning、Encryption、Public Access Block        |
+| Terraform State   | DEV環境を統一Stateで管理                            | `eol/dev/terraform.tfstate`                      |
+| Budget            | 月額Budgetおよび通知設定                             | 金額、通知先、閾値                                        |
+| Route 53          | DEV用Public Hosted Zone                      | Domain名、NS Record                                |
+| DNS Delegation    | 親ドメインからDEV Hosted ZoneへのNS委譲                | 4つのNSが正しく登録されているか                                |
+| ACM               | CloudFront用Public Certificate               | `us-east-1`、DNS Validation、Issued状態              |
+| S3                | Static用Bucket                               | Naming、Encryption、Versioning、Public Access Block |
+| S3                | Upload用Bucket                               | Naming、Private設定、Encryption                      |
+| Amplify           | GitHub Repository連携                         | Repo、Branch、GitHub App接続                         |
+| Amplify           | Amplify App作成                               | `WEB_COMPUTE` / Next.js SSR                      |
+| Amplify           | DEV Branch設定                                | `DEVELOPMENT`、Auto Build                         |
+| Amplify IAM       | Amplify Service Role                        | Trust Policy、CloudWatch Logs権限                   |
+| CloudFront        | Distribution作成                              | Origin、Alias、ACM証明書                              |
+| CloudFront Origin | Amplify Origin                              | Amplify App/Branchへの接続                           |
+| CloudFront Origin | S3 Origin                                   | OAC / Bucket Policy                              |
+| Route 53 Alias    | DEV Domain → CloudFront                     | A / AAAA Alias                                   |
+| IAM Group         | `BillViewer`                                | Billing ReadOnly                                 |
+| IAM Group         | `Administrator`                             | `AdministratorAccess`、ユーザー未割当                    |
+| IAM Group         | `Developer`                                 | 開発者向け権限                                          |
+| IAM Group         | `InfraEngineer`                             | 5サービス管理権限                                        |
+| IAM User          | 指定3名のIAM User作成                             | 所属Group、Console Login                            |
+| IAM Security      | Terraform State Bucket保護                    | InfraEngineerでもtfstate Bucket操作不可                |
+| Billing Access    | Billing参照権限                                 | `AWSBillingReadOnlyAccess`                       |
+| GitHub            | Demo用Next.jsコードUpload                       | Repository / Branch / Build成功                    |
+| GitHub            | TerraformコードUpload                          | Secret / tfstate / tfvarsがCommitされていないか          |
+| Demo Test         | Amplify Build / Deploy                      | 成功しているか                                          |
+| Demo Test         | Amplify URL疎通                               | Homepage / `/api/health`                         |
+| HTTPS Test        | Custom Domain                               | ACM証明書でHTTPS接続可能か                                |
+| Final Check       | Terraform `plan`                            | 不要なdestroy / replaceがないか                         |
 
-AWS環境の構築作業が一通り完了しましたので、ご連絡いたします。
-
-今回対象となっているAWS各サービスの構築および設定はすべて完了しております。
-また、指定いただいた3名分のAWSアカウントログイン情報を添付しておりますので、ご確認ください。
-
-あわせて、以下の対応も完了しております。
-
-プロジェクトDemo用のコードをGitHub Repositoryへアップロードし、動作確認済み
-TerraformによるAWS環境構築コードをGitHub Repositoryへアップロード済み
-AWS各サービスの構築および接続確認済み
-
-お手数ですが、添付資料およびGitHub Repositoryの内容をご確認・レビューいただけますでしょうか。
 
 問題点や修正事項等がございましたら、ご連絡いただけますと幸いです。
 
