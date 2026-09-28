@@ -20,3 +20,5 @@
 
 - 操作前に、すべての Access を閉じてください。
 - Access の使用中は、BAT のメニュー画面を閉じないでください。
+- Access の画面を閉じても、プロセスが残る場合があります。タスクマネージャーで「Microsoft Access（MSACCESS.EXE）」が終了していることを確認してください。
+- Access　データベースが開かない場合は、すべての Access と BAT を終了し、［Windows］＋［R］で `%LOCALAPPDATA%` を開いてください。必要な accdbファイル をバックアップしたうえで、`ADS\SQLTrainingV3` 内の該当する作業フォルダーを削除し、BAT を再起動してください。
