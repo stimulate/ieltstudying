@@ -23,16 +23,64 @@
 - Access の画面を閉じても、プロセスが残る場合があります。タスクマネージャーで「Microsoft Access（MSACCESS.EXE）」が終了していることを確認してください。
 - Access　データベースが開かない場合は、すべての Access と BAT を終了し、［Windows］＋［R］で `%LOCALAPPDATA%` を開いてください。必要な accdbファイル をバックアップしたうえで、`ADS\SQLTrainingV3` 内の該当する作業フォルダーを削除し、BAT を再起動してください。
 
-# Enable Virtual Machine Platform
-Enable-WindowsOptionalFeature `
+$ErrorActionPreference = "Stop"
+
+# Path to WSL MSI
+$MsiPath = Join-Path $PSScriptRoot "wsl.msi"
+
+# Check whether MSI exists
+if (-not (Test-Path $MsiPath)) {
+    Write-Error "WSL MSI not found: $MsiPath"
+    exit 1
+}
+
+$RestartRequired = $false
+
+# Check Virtual Machine Platform
+$Feature = Get-WindowsOptionalFeature `
     -Online `
-    -FeatureName VirtualMachinePlatform `
-    -All `
-    -NoRestart
+    -FeatureName VirtualMachinePlatform
 
-# Install WSL
-Start-Process msiexec.exe `
-    -ArgumentList '/i "wsl.msi" /qn /norestart' `
-    -Wait
+if ($Feature.State -ne "Enabled") {
 
-exit 3010
+    Write-Output "Enabling VirtualMachinePlatform..."
+
+    $Result = Enable-WindowsOptionalFeature `
+        -Online `
+        -FeatureName VirtualMachinePlatform `
+        -All `
+        -NoRestart
+
+    if ($Result.RestartNeeded) {
+        $RestartRequired = $true
+    }
+}
+else {
+    Write-Output "VirtualMachinePlatform is already enabled."
+}
+
+# Install WSL MSI
+Write-Output "Installing WSL..."
+
+$Process = Start-Process `
+    -FilePath "msiexec.exe" `
+    -ArgumentList "/i `"$MsiPath`" /qn /norestart" `
+    -Wait `
+    -PassThru
+
+if ($Process.ExitCode -eq 3010) {
+    $RestartRequired = $true
+}
+elseif ($Process.ExitCode -ne 0) {
+    Write-Error "WSL installation failed. Exit code: $($Process.ExitCode)"
+    exit $Process.ExitCode
+}
+
+# Return appropriate result to Intune
+if ($RestartRequired) {
+    Write-Output "Installation completed. Restart required."
+    exit 3010
+}
+
+Write-Output "Installation completed successfully."
+exit 0
