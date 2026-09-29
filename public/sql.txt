@@ -84,3 +84,16 @@ if ($RestartRequired) {
 
 Write-Output "Installation completed successfully."
 exit 0
+
+$feature = Get-WindowsOptionalFeature `
+    -Online `
+    -FeatureName VirtualMachinePlatform
+
+$wsl = Get-Command wsl.exe -ErrorAction SilentlyContinue
+
+if (($feature.State -eq "Enabled") -and ($null -ne $wsl)) {
+    Write-Output "WSL and VirtualMachinePlatform detected"
+    exit 0
+}
+
+exit 1
