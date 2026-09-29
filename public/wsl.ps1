@@ -97,3 +97,32 @@ if ($ProductCode -match "^\{.*\}$") {
 
 Write-Error "Unable to determine Rancher Desktop MSI ProductCode."
 exit 1
+
+
+$UninstallPaths = @(
+    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*",
+    "HKCU:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*"
+)
+
+$Rancher = Get-ItemProperty `
+    -Path $UninstallPaths `
+    -ErrorAction SilentlyContinue |
+    Where-Object {
+        $_.DisplayName -like "Rancher Desktop*"
+    } |
+    Select-Object -First 1
+
+if ($null -ne $Rancher) {
+
+    # Make sure privileged service is NOT installed
+    $Service = Get-Service `
+        -Name "RancherDesktopPrivilegedService" `
+        -ErrorAction SilentlyContinue
+
+    if ($null -eq $Service) {
+        Write-Output "Rancher Desktop per-user installation detected."
+        exit 0
+    }
+}
+
+exit 1
