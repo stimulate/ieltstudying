@@ -177,23 +177,39 @@ https://learn.microsoft.com/ja-jp/intune/device-management/tools/run-powershell-
 | Demo Test         | Amplify URL疎通                               | Homepage / `/api/health`                         |
 | HTTPS Test        | Custom Domain                               | ACM証明書でHTTPS接続可能か                                |
 | Final Check       | Terraform `plan`                            | 不要なdestroy / replaceがないか                         |
-
-
-問題点や修正事項等がございましたら、ご連絡いただけますと幸いです。
-
-よろしくお願いいたします。
+Chromebook検証に必要なCEUライセンスについて
 
 お疲れ様です。
 
-ご連絡ありがとうございます。
+Chromebookの検証にあたり、ChromeOS Enterprise Upgrade（CEU）ライセンスが必要となる主なテスト項目と、ライセンスの価格について整理しました。
 
-ご提示いただいた条件について確認いたしました。
+**■ CEUライセンスが必要となる主なテスト項目**
 
-SCIMによる外部サービスへのユーザー情報連携が必要となるため、適用可否を検討する前に、まずセキュリティ面での確認が必要と考えております。
+- Chromebookの企業登録および管理対象端末としての登録確認
+- 管理ポリシーの設定・配布・反映確認
+- 端末へのログイン制限、ゲストモード、開発者モード等の制御確認
+- アプリ・拡張機能のインストール制御
+- OSの自動更新・バージョン管理
+- USB等の外部デバイスの利用制御
+- リモートワイプ、端末の初期化・再登録等の管理機能の確認
 
-〇〇部の皆様  
-Entra IDから外部クラウドサービスへSCIMでユーザー情報を連携する構成について、セキュリティ上の懸念点や事前確認事項、社内審査の要否などをご確認いただけますでしょうか。
+**■ ライセンスについて**
 
-現時点では検証・設定の実施は未定のため、確認結果を踏まえて今後の対応を検討したいと考えております。
+CEUはGoogle Workspaceのプランとは別の、Chromebook等のChromeOSデバイスを管理するための独立したライセンスです。管理対象デバイスごとにライセンスが必要となります。
 
-よろしくお願いいたします。
+- **年間ライセンス：** 1台あたり年額7,000円（税抜）
+  - Google公式価格ページ：[ChromeOS デバイス管理ライセンス](https://chromeos.google/intl/ja_jp/products/device-management/)
+- **永久ライセンス：** 1台あたり21,000円（税抜）
+  - Google認定パートナー経由での購入となります。販売店の公開価格：[サテライトオフィス — Chromebookレンタル・ライセンス情報](https://www.sateraito.jp/Chromedevice_Subscription/index.html)
+
+なお、年間ライセンスの価格はGoogle公式サイトに掲載されている参考標準価格（MSRP）です。永久ライセンスの価格は販売店の公開価格であり、Google公式の価格ではありません。購入にあたっては、現在の取り扱い状況および購入条件の確認が必要です。
+
+**■ 参考：Google公式のライセンス説明**
+
+ライセンスの種類や購入方法については、以下のGoogle公式ヘルプをご参照ください。
+
+[ChromeOS デバイスのアップグレードを購入する](https://support.google.com/chrome/a/answer/7613771?hl=ja)
+
+以上、ご確認よろしくお願いいたします。
+
+
