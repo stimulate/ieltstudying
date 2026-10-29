@@ -180,7 +180,13 @@ https://learn.microsoft.com/ja-jp/intune/device-management/tools/run-powershell-
 Chromebook検証に必要なCEUライセンスについて
 
 
-# Skill: SharePoint限定ナレッジ検索
+
+---
+name: sharepoint-knowledge-search
+description: Search only the specified SharePoint folder and its subfolders to answer questions based on internal documents. Do not use web search or external sources.
+---
+
+# SharePoint限定ナレッジ検索
 
 ## Goal
 指定されたSharePointフォルダー内の文書だけを根拠として、ユーザーの質問に回答する。
@@ -229,5 +235,6 @@ Chromebook検証に必要なCEUライセンスについて
 
 ### 確認できない事項
 資料から確認できない事項がある場合のみ記載する。
+
 
 
