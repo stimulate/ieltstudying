@@ -51,3 +51,6 @@ Get-FileHash "R:\Recovery\WindowsRE\winre.wim" -Algorithm SHA256
 --
 Get-Item "R:\Recovery\WindowsRE\winre.wim" |
 Format-List FullName, Length
+---
+reagentc /setreimage /path R:\Recovery\WindowsRE /target C:\Windows
+--
