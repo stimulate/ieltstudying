@@ -41,3 +41,13 @@ exit 1
 create partition primary size=2048 offset=266338304 id=de94bba4-06d1-4d40-a16a-bfd50179d6ac
 gpt attributes=0x8000000000000001
 format quick fs=ntfs label="Windows RE tools"
+
+New-Item -ItemType Directory -Path "R:\Recovery\WindowsRE" -Force
+
+Copy-Item "C:\WinRE_Backup\winre.wim" "R:\Recovery\WindowsRE\winre.wim"
+
+--
+Get-FileHash "R:\Recovery\WindowsRE\winre.wim" -Algorithm SHA256
+--
+Get-Item "R:\Recovery\WindowsRE\winre.wim" |
+Format-List FullName, Length
