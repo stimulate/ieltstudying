@@ -21,3 +21,19 @@ if (-not (Test-Path $path)) {
 }
 
 Set-ItemProperty -Path $path -Name "EncryptedPIDL" -Value $expected -Type String
+
+------
+
+$PythonExe = "$env:LOCALAPPDATA\Programs\Python\Python314\python.exe"
+$ExpectedVersion = "3.14.7"
+
+if (Test-Path $PythonExe) {
+    $ActualVersion = & $PythonExe -c "import sys; print('.'.join(map(str, sys.version_info[:3])))" 2>$null
+
+    if ($ActualVersion -eq $ExpectedVersion) {
+        Write-Output "Python $ActualVersion detected"
+        exit 0
+    }
+}
+
+exit 1
