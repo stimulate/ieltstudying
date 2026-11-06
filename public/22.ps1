@@ -150,3 +150,14 @@ if (Test-Path "HKLM:\SOFTWARE\CompanyScreensaver") {
 
 Write-Output "Uninstall completed."
 exit 0
+
+
+$features = @(
+    "Microsoft-Windows-Subsystem-Linux",
+    "VirtualMachinePlatform"
+)
+
+foreach ($feature in $features) {
+    Get-WindowsOptionalFeature -Online -FeatureName $feature |
+        Select-Object FeatureName, State
+}
