@@ -161,3 +161,74 @@ foreach ($feature in $features) {
     Get-WindowsOptionalFeature -Online -FeatureName $feature |
         Select-Object FeatureName, State
 }
+
+
+$ErrorActionPreference = "Stop"
+
+$LogFolder = "$env:ProgramData\Company\WSL"
+$LogFile = Join-Path $LogFolder "Enable-WSL2.log"
+
+New-Item -Path $LogFolder -ItemType Directory -Force |
+    Out-Null
+
+function Write-Log {
+    param([string]$Message)
+
+    $Time = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    Add-Content -Path $LogFile -Value "[$Time] $Message"
+}
+
+try {
+    $Features = @(
+        "Microsoft-Windows-Subsystem-Linux",
+        "VirtualMachinePlatform"
+    )
+
+    $RestartRequired = $false
+
+    foreach ($Feature in $Features) {
+
+        $Current = Get-WindowsOptionalFeature `
+            -Online -FeatureName $Feature
+
+        Write-Log "$Feature current state: $($Current.State)"
+
+        if ($Current.State -eq "Enabled") {
+            Write-Log "$Feature already enabled"
+            continue
+        }
+
+        if ($Current.State -eq "EnablePending") {
+            $RestartRequired = $true
+            continue
+        }
+
+        $Result = Enable-WindowsOptionalFeature `
+            -Online `
+            -FeatureName $Feature `
+            -All `
+            -NoRestart
+
+        if ($Result.RestartNeeded) {
+            $RestartRequired = $true
+        }
+
+        $NewState = (Get-WindowsOptionalFeature `
+            -Online -FeatureName $Feature).State
+
+        Write-Log "$Feature new state: $NewState"
+    }
+
+    if ($RestartRequired) {
+        Write-Log "Restart required."
+    }
+    else {
+        Write-Log "No restart required."
+    }
+
+    exit 0
+}
+catch {
+    Write-Log "ERROR: $($_.Exception.Message)"
+    exit 1
+}
