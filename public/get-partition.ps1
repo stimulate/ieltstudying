@@ -1,59 +1,20 @@
 
-Write-Output "===== CPC DISK AUDIT ====="
-Write-Output "Computer: $env:COMPUTERNAME"
-Write-Output "User: $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
-
-# 1. CIM Physical Disks
-Write-Output "`n===== CIM DISKS ====="
-
 try {
-    Get-CimInstance Win32_DiskDrive -ErrorAction Stop |
-    ForEach-Object {
-        Write-Output "Disk Index: $($_.Index)"
-        Write-Output "Model: $($_.Model)"
-        Write-Output "Size GB: $([math]::Round($_.Size / 1GB, 2))"
-        Write-Output "Partitions: $($_.Partitions)"
+    $partitions = Get-Partition -DiskNumber 0 -ErrorAction Stop
+
+    $result = $partitions | ForEach-Object {
+        "PartitionNumber=$($_.PartitionNumber), DriveLetter=$($_.DriveLetter), Type=$($_.Type), Size=$([math]::Round($_.Size / 1GB, 2))GB, Offset=$([math]::Round($_.Offset / 1GB, 2))GB"
     }
+
+    Write-Output ($result -join "; ")
+
+    exit 0
 }
 catch {
-    Write-Output "CIM Disk Error: $($_.Exception.Message)"
+    Write-Output "ERROR: $($_.Exception.Message)"
+    exit 1
 }
 
-# 2. CIM Partitions
-Write-Output "`n===== CIM PARTITIONS ====="
-
-try {
-    Get-CimInstance Win32_DiskPartition -ErrorAction Stop |
-    ForEach-Object {
-        Write-Output "Disk Index: $($_.DiskIndex)"
-        Write-Output "Partition: $($_.Index)"
-        Write-Output "Name: $($_.Name)"
-        Write-Output "Type: $($_.Type)"
-        Write-Output "Size GB: $([math]::Round($_.Size / 1GB, 2))"
-        Write-Output "Offset GB: $([math]::Round($_.StartingOffset / 1GB, 2))"
-    }
-}
-catch {
-    Write-Output "CIM Partition Error: $($_.Exception.Message)"
-}
-
-# 3. Logical Disks
-Write-Output "`n===== LOGICAL DISKS ====="
-
-try {
-    Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" |
-    ForEach-Object {
-        Write-Output "Drive: $($_.DeviceID)"
-        Write-Output "Size GB: $([math]::Round($_.Size / 1GB, 2))"
-        Write-Output "Free GB: $([math]::Round($_.FreeSpace / 1GB, 2))"
-    }
-}
-catch {
-    Write-Output "Logical Disk Error: $($_.Exception.Message)"
-}
-
-Write-Output "`n===== AUDIT COMPLETE ====="
-exit 0
 
 
 Write-Output "===== DISK AUDIT START ====="
