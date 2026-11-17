@@ -1,5 +1,18 @@
-Write-Output "Disk partition audit requested"
-exit 1
+$disks = Get-Disk
+
+foreach ($disk in $disks) {
+    Write-Output "Disk: $($disk.Number)"
+    Write-Output "Size: $([math]::Round($disk.Size / 1GB, 2)) GB"
+
+    Get-Partition -DiskNumber $disk.Number |
+    ForEach-Object {
+        Write-Output "Partition: $($_.PartitionNumber)"
+        Write-Output "Drive: $($_.DriveLetter)"
+        Write-Output "Size: $([math]::Round($_.Size / 1GB, 2)) GB"
+    }
+}
+
+exit 0
 
 Write-Output "===== DISK AUDIT START ====="
 
